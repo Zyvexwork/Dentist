@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us — BrightSmile Dental Clinic</title>
+  <meta name="description" content="Get in touch with BrightSmile Dental Clinic. Call, WhatsApp, or send us a message. We respond within 2 hours.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.1fr;
+      gap: 48px;
+      margin-top: 48px;
+      align-items: start;
+    }
+    /* Contact Info Cards */
+    .contact-info { display: flex; flex-direction: column; gap: 16px; }
+    .contact-info-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 22px 24px;
+      display: flex; align-items: flex-start; gap: 16px;
+      transition: var(--transition);
+    }
+    .contact-info-card:hover { border-color: var(--primary); box-shadow: var(--shadow-sm); transform: translateX(4px); }
+    .ci-icon {
+      width: 48px; height: 48px; border-radius: 14px;
+      background: var(--primary-pale); color: var(--primary);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; flex-shrink: 0;
+    }
+    .ci-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); margin-bottom: 4px; }
+    .ci-value { font-weight: 700; color: var(--text-dark); font-size: 0.95rem; margin-bottom: 3px; }
+    .ci-sub { font-size: 0.8rem; color: var(--text-muted); }
+    .ci-link { color: var(--primary); font-weight: 700; font-size: 0.95rem; text-decoration: none; }
+    .ci-link:hover { text-decoration: underline; }
+
+    /* WhatsApp CTA */
+    .whatsapp-banner {
+      background: linear-gradient(135deg, #25D366, #128C7E);
+      border-radius: var(--radius-md); padding: 20px 24px;
+      display: flex; align-items: center; gap: 16px;
+      text-decoration: none; transition: var(--transition);
+    }
+    .whatsapp-banner:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(37,211,102,0.3); }
+    .wa-icon { font-size: 2rem; flex-shrink: 0; }
+    .wa-text strong { display: block; color: white; font-size: 1rem; margin-bottom: 2px; }
+    .wa-text span { color: rgba(255,255,255,0.85); font-size: 0.82rem; }
+
+    /* Social row */
+    .social-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .social-btn {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 18px; border-radius: 99px;
+      border: 2px solid var(--border); background: var(--white);
+      font-size: 0.82rem; font-weight: 700; color: var(--text-mid);
+      text-decoration: none; transition: var(--transition);
+    }
+    .social-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .social-btn .sb-icon { font-size: 1rem; }
+
+    /* Contact Form */
+    .contact-form-wrap {
+      background: var(--white); border-radius: var(--radius-lg);
+      border: 1px solid var(--border); overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+    .form-top {
+      background: var(--primary); padding: 24px 28px;
+      display: flex; align-items: center; gap: 14px;
+    }
+    .form-top-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: rgba(255,255,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; flex-shrink: 0;
+    }
+    .form-top h3 { color: white; margin-bottom: 3px; }
+    .form-top p { color: rgba(255,255,255,0.8); font-size: 0.82rem; margin: 0; }
+    .contact-form-body { padding: 28px; }
+
+    .subject-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+    .chip {
+      padding: 7px 16px; border-radius: 99px;
+      border: 1.5px solid var(--border); background: var(--white);
+      font-size: 0.8rem; font-weight: 600; color: var(--text-mid);
+      cursor: pointer; transition: var(--transition);
+    }
+    .chip:hover, .chip.selected { background: var(--primary); color: white; border-color: var(--primary); }
+
+    /* Department cards */
+    .dept-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 16px; margin-top: 48px;
+    }
+    .dept-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius-md); padding: 22px 18px;
+      text-align: center; transition: var(--transition);
+    }
+    .dept-card:hover { border-color: var(--primary); box-shadow: var(--shadow-sm); }
+    .dept-icon { font-size: 2rem; margin-bottom: 10px; }
+    .dept-name { font-weight: 700; font-size: 0.9rem; margin-bottom: 4px; }
+    .dept-contact { font-size: 0.8rem; color: var(--primary); font-weight: 600; }
+    .dept-hours { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
+
+    /* FAQ */
+    .contact-faq { margin-top: 64px; }
+    .faq-compact { display: flex; flex-direction: column; gap: 8px; }
+    .faq-row {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); overflow: hidden;
+    }
+    .faq-row-q {
+      padding: 16px 20px; cursor: pointer;
+      font-weight: 600; font-size: 0.9rem; color: var(--text-dark);
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .faq-row-q .fq-ico {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: var(--primary-pale); color: var(--primary);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; flex-shrink: 0; transition: var(--transition);
+    }
+    .faq-row.open .fq-ico { background: var(--primary); color: white; transform: rotate(45deg); }
+    .faq-row-a {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.35s ease;
+      font-size: 0.875rem; color: var(--text-mid); line-height: 1.7;
+      padding: 0 20px;
+    }
+    .faq-row.open .faq-row-a { max-height: 200px; padding-bottom: 16px; }
+
+    /* Feedback strip */
+    .feedback-strip {
+      background: linear-gradient(135deg, var(--primary-pale), var(--cream));
+      border-radius: var(--radius-lg); padding: 40px;
+      display: flex; align-items: center; gap: 32px;
+      flex-wrap: wrap; margin-top: 64px;
+    }
+    .feedback-strip h3 { margin-bottom: 6px; }
+    .feedback-strip p { font-size: 0.875rem; }
+    .rating-quick { display: flex; gap: 8px; }
+    .rq-btn {
+      width: 44px; height: 44px; border-radius: 50%;
+      border: 2px solid var(--border); background: white;
+      font-size: 1.4rem; cursor: pointer; transition: var(--transition);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .rq-btn:hover { transform: scale(1.2); border-color: var(--accent); }
+
+    @media (max-width: 900px) {
+      .contact-grid { grid-template-columns: 1fr; gap: 32px; }
+      .dept-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 560px) {
+      .dept-grid { grid-template-columns: 1fr; }
+      .feedback-strip { flex-direction: column; text-align: center; }
+      .rating-quick { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2C9.5 2 7.5 3.5 6.5 5.5C5.5 3.5 3 2 2 5C1 8 3 11 5 12.5C5 16 6 22 8 22C9 22 9.5 20.5 10 19C10.5 17.5 11 16 12 16C13 16 13.5 17.5 14 19C14.5 20.5 15 22 16 22C18 22 19 16 19 12.5C21 11 23 8 22 5C21 2 18.5 3.5 17.5 5.5C16.5 3.5 14.5 2 12 2Z"/></svg>
+      </div>
+      BrightSmile
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="services.html">Services</a></li>
+      <li><a href="about.html">About Us</a></li>
+      <li><a href="gallery.html">Gallery</a></li>
+      <li><a href="reviews.html">Reviews</a></li>
+      <li><a href="location.html">Location</a></li>
+      <li><a href="contact.html" class="active">Contact</a></li>
+    </ul>
+    <div class="nav-cta">
+      <span class="nav-phone"><i class="fas fa-phone"></i> +91 20 1234 5678</span>
+      <a href="appointment.html" class="btn btn-primary btn-sm">Book Appointment</a>
+    </div>
+    <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+<div class="mobile-nav" id="mobileNav">
+  <a href="index.html">&#127968; Home</a>
+  <a href="services.html">&#129463; Services</a>
+  <a href="about.html">&#128104;&#8205;&#9877; About Us</a>
+  <a href="gallery.html">&#128444; Gallery</a>
+  <a href="reviews.html">&#11088; Reviews</a>
+  <a href="location.html">&#128205; Location</a>
+  <a href="contact.html">&#9993; Contact</a>
+  <a href="appointment.html" style="background:var(--primary);color:white;text-align:center;margin-top:8px;border-radius:var(--radius-sm);">&#128197; Book Appointment</a>
+</div>
+
+<!-- PAGE HERO -->
+<section class="page-hero">
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a><span>&#8250;</span><span>Contact</span>
+    </div>
+    <div class="section-label" style="margin:0 auto 16px">Get In Touch</div>
+    <h1>We'd Love to <em style="color:var(--primary)">Hear From You</em></h1>
+    <p class="lead" style="margin-top:12px;max-width:520px;margin-left:auto;margin-right:auto">
+      Questions, feedback, or just want to know more? Our friendly team typically responds within 2 hours during clinic hours.
+    </p>
+  </div>
+</section>
+
+<!-- MAIN CONTACT SECTION -->
+<section class="section">
+  <div class="container">
+    <div class="contact-grid">
+
+      <!-- LEFT: CONTACT INFO -->
+      <div class="contact-info">
+
+        <!-- Phone -->
+        <div class="contact-info-card" data-animate>
+          <div class="ci-icon"><i class="fas fa-phone"></i></div>
+          <div>
+            <div class="ci-label">Call Us</div>
+            <a href="tel:+912012345678" class="ci-link">+91 20 1234 5678</a>
+            <div class="ci-sub">Mon–Sat 9 AM–8 PM &nbsp;|&nbsp; Sun 10 AM–2 PM</div>
+          </div>
+        </div>
+
+        <!-- Emergency -->
+        <div class="contact-info-card" data-animate data-delay="60" style="border-color:#FCA5A5">
+          <div class="ci-icon" style="background:#FFF0F0;color:var(--danger)"><i class="fas fa-ambulance"></i></div>
+          <div>
+            <div class="ci-label">Dental Emergency</div>
+            <a href="tel:+912012345678" class="ci-link" style="color:var(--danger)">+91 20 1234 5678</a>
+            <div class="ci-sub">Same-day emergency slots every day — call ahead</div>
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="contact-info-card" data-animate data-delay="120">
+          <div class="ci-icon"><i class="fas fa-envelope"></i></div>
+          <div>
+            <div class="ci-label">Email Us</div>
+            <a href="mailto:hello@brightsmile.in" class="ci-link">hello@brightsmile.in</a>
+            <div class="ci-sub">Response within 4 hours during clinic hours</div>
+          </div>
+        </div>
+
+        <!-- Address -->
+        <div class="contact-info-card" data-animate data-delay="180">
+          <div class="ci-icon"><i class="fas fa-map-marker-alt"></i></div>
+          <div>
+            <div class="ci-label">Visit Us</div>
+            <div class="ci-value">14, Dental Plaza, FC Road</div>
+            <div class="ci-sub">Deccan Gymkhana, Pune 411004, Maharashtra</div>
+            <a href="https://maps.google.com/?q=FC+Road+Deccan+Pune" target="_blank"
+               style="font-size:0.8rem;color:var(--primary);font-weight:600;margin-top:6px;display:inline-block">
+              <i class="fas fa-directions"></i> Get Directions
+            </a>
+          </div>
+        </div>
+
+        <!-- WhatsApp Banner -->
+        <a href="https://wa.me/912012345678" target="_blank" class="whatsapp-banner" data-animate data-delay="240">
+          <div class="wa-icon">&#128172;</div>
+          <div class="wa-text">
+            <strong>Chat on WhatsApp</strong>
+            <span>Quick answers to your questions — usually within minutes!</span>
+          </div>
+          <i class="fas fa-arrow-right" style="color:white;margin-left:auto;opacity:0.8"></i>
+        </a>
+
+        <!-- Social Media -->
+        <div data-animate data-delay="300">
+          <div style="font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);margin-bottom:12px">
+            Follow Us
+          </div>
+          <div class="social-row">
+            <a href="#" class="social-btn">
+              <span class="sb-icon">&#128100;</span> Facebook
+            </a>
+            <a href="#" class="social-btn">
+              <span class="sb-icon">&#128247;</span> Instagram
+            </a>
+            <a href="#" class="social-btn">
+              <span class="sb-icon">&#127910;</span> YouTube
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: CONTACT FORM -->
+      <div class="contact-form-wrap" data-animate data-delay="100">
+        <div class="form-top">
+          <div class="form-top-icon">&#9993;</div>
+          <div>
+            <h3>Send Us a Message</h3>
+            <p>We reply within 2 hours during clinic hours</p>
+          </div>
+        </div>
+        <div class="contact-form-body">
+
+          <!-- Subject Chips -->
+          <div style="margin-bottom:8px;font-size:0.82rem;font-weight:600;color:var(--text-dark)">What is this about?</div>
+          <div class="subject-chips" id="subjectChips">
+            <span class="chip selected" data-subject="General Enquiry">General Enquiry</span>
+            <span class="chip" data-subject="Book Appointment">Book Appointment</span>
+            <span class="chip" data-subject="Pricing & Insurance">Pricing &amp; Insurance</span>
+            <span class="chip" data-subject="Treatment Question">Treatment Question</span>
+            <span class="chip" data-subject="Feedback / Complaint">Feedback</span>
+            <span class="chip" data-subject="Other">Other</span>
+          </div>
+          <input type="hidden" id="subjectInput" value="General Enquiry">
+
+          <form id="contactForm" data-ajax data-type="contact" data-success="Message sent! We will reply within 2 hours.">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 16px">
+              <div class="form-group">
+                <label>Full Name <span class="form-required">*</span></label>
+                <input type="text" name="name" placeholder="Priya Sharma" required>
+              </div>
+              <div class="form-group">
+                <label>Phone Number <span class="form-required">*</span></label>
+                <input type="tel" name="phone" placeholder="+91 98765 43210" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Email Address</label>
+              <input type="email" name="email" placeholder="priya@example.com">
+            </div>
+            <div class="form-group">
+              <label>Subject</label>
+              <input type="text" name="subject" id="subjectDisplay" value="General Enquiry" readonly
+                     style="background:var(--cream);cursor:default">
+            </div>
+            <div class="form-group">
+              <label>Your Message <span class="form-required">*</span></label>
+              <textarea name="message" rows="5"
+                placeholder="Tell us how we can help you. We read every message personally and respond promptly..." required></textarea>
+            </div>
+            <div class="form-group" style="display:flex;align-items:flex-start;gap:10px">
+              <input type="checkbox" id="consentCheck" required style="margin-top:4px;accent-color:var(--primary)">
+              <label for="consentCheck" style="font-size:0.82rem;color:var(--text-muted)">
+                I consent to BrightSmile Dental Clinic storing my contact details to respond to this enquiry. <span class="form-required">*</span>
+              </label>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%">
+              <i class="fas fa-paper-plane"></i> Send Message
+            </button>
+          </form>
+
+          <!-- Response time indicator -->
+          <div style="display:flex;align-items:center;gap:8px;margin-top:16px;padding:12px;background:var(--primary-pale);border-radius:var(--radius-sm)">
+            <div style="width:8px;height:8px;border-radius:50%;background:#10B981;animation:pulse 1.5s infinite;flex-shrink:0"></div>
+            <span style="font-size:0.78rem;color:var(--text-mid)">
+              <strong style="color:var(--primary)">Team online</strong> &nbsp;&mdash;&nbsp; Average reply time: <strong>47 minutes</strong>
+            </span>
+          </div>
+          <style>@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}</style>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- DEPARTMENTS -->
+<section class="section-sm" style="background:var(--cream)">
+  <div class="container">
+    <div style="text-align:center">
+      <div class="section-label">Direct Lines</div>
+      <h2>Reach the Right Department</h2>
+      <p style="max-width:480px;margin:10px auto 0">Need to talk to a specific team? Here are our direct department contacts.</p>
+    </div>
+    <div class="dept-grid">
+      <div class="dept-card" data-animate>
+        <div class="dept-icon">&#128197;</div>
+        <div class="dept-name">Appointments</div>
+        <a href="tel:+912012345678" class="dept-contact">+91 20 1234 5678</a>
+        <div class="dept-hours">Mon–Sat 9 AM–8 PM</div>
+      </div>
+      <div class="dept-card" data-animate data-delay="80">
+        <div class="dept-icon">&#128176;</div>
+        <div class="dept-name">Billing &amp; Insurance</div>
+        <a href="mailto:billing@brightsmile.in" class="dept-contact">billing@brightsmile.in</a>
+        <div class="dept-hours">Mon–Fri 9 AM–6 PM</div>
+      </div>
+      <div class="dept-card" data-animate data-delay="160">
+        <div class="dept-icon">&#128680;</div>
+        <div class="dept-name">Dental Emergencies</div>
+        <a href="tel:+912012345678" class="dept-contact" style="color:var(--danger)">+91 20 1234 5678</a>
+        <div class="dept-hours">Daily 9 AM–9 PM</div>
+      </div>
+      <div class="dept-card" data-animate data-delay="240">
+        <div class="dept-icon">&#128247;</div>
+        <div class="dept-name">Media &amp; PR</div>
+        <a href="mailto:media@brightsmile.in" class="dept-contact">media@brightsmile.in</a>
+        <div class="dept-hours">Mon–Fri 10 AM–5 PM</div>
+      </div>
+      <div class="dept-card" data-animate data-delay="320">
+        <div class="dept-icon">&#128101;</div>
+        <div class="dept-name">Careers</div>
+        <a href="mailto:careers@brightsmile.in" class="dept-contact">careers@brightsmile.in</a>
+        <div class="dept-hours">We're hiring dentists!</div>
+      </div>
+      <div class="dept-card" data-animate data-delay="400">
+        <div class="dept-icon">&#127970;</div>
+        <div class="dept-name">Baner Clinic (2026)</div>
+        <a href="mailto:baner@brightsmile.in" class="dept-contact">baner@brightsmile.in</a>
+        <div class="dept-hours">Join the waitlist</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT FAQ -->
+<section class="section contact-faq">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start">
+      <div>
+        <div class="section-label">Quick Answers</div>
+        <h2>Common Questions</h2>
+        <p style="margin:12px 0 32px">Can't find what you need? Send us a message or call — we're always happy to help.</p>
+        <a href="appointment.html" class="btn btn-primary">
+          <i class="far fa-calendar-check"></i> Book an Appointment
+        </a>
+      </div>
+      <div class="faq-compact" id="contactFaq">
+        <div class="faq-row">
+          <div class="faq-row-q" onclick="toggleFaq(this)">
+            How quickly do you respond to messages?
+            <div class="fq-ico"><i class="fas fa-plus"></i></div>
+          </div>
+          <div class="faq-row-a">During clinic hours (Mon–Sat 9 AM–8 PM) we typically reply within 47 minutes on average. WhatsApp messages are usually answered fastest. Outside hours, we respond first thing the next morning.</div>
+        </div>
+        <div class="faq-row">
+          <div class="faq-row-q" onclick="toggleFaq(this)">
+            Can I request a callback instead of calling?
+            <div class="fq-ico"><i class="fas fa-plus"></i></div>
+          </div>
+          <div class="faq-row-a">Absolutely. Use the contact form above and select "General Enquiry." Mention your preferred callback time in the message and our front desk will call you back at your convenience.</div>
+        </div>
+        <div class="faq-row">
+          <div class="faq-row-q" onclick="toggleFaq(this)">
+            Do you offer teleconsultations?
+            <div class="fq-ico"><i class="fas fa-plus"></i></div>
+          </div>
+          <div class="faq-row-a">Yes! We offer 15-minute video consultations for patients who want a quick opinion, a treatment plan review, or are located far from the clinic. Book through the appointment page and select "Tele-Consultation" as the service.</div>
+        </div>
+        <div class="faq-row">
+          <div class="faq-row-q" onclick="toggleFaq(this)">
+            How do I cancel or reschedule my appointment?
+            <div class="fq-ico"><i class="fas fa-plus"></i></div>
+          </div>
+          <div class="faq-row-a">Call us or WhatsApp at least 24 hours before your appointment and we will reschedule at no charge. Last-minute cancellations (under 4 hours) may incur a small administrative fee for specialist appointments.</div>
+        </div>
+        <div class="faq-row">
+          <div class="faq-row-q" onclick="toggleFaq(this)">
+            Is there a patient portal where I can view my records?
+            <div class="fq-ico"><i class="fas fa-plus"></i></div>
+          </div>
+          <div class="faq-row-a">We are currently building our patient portal, launching in Q3 2025. In the meantime, you can request your treatment records, X-rays, and invoices by emailing records@brightsmile.in and we will send them within 24 hours.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEEDBACK STRIP -->
+<section class="section-sm" style="background:var(--cream)">
+  <div class="container">
+    <div class="feedback-strip">
+      <div style="flex:1;min-width:220px">
+        <h3>Had a recent visit?</h3>
+        <p>Rate your experience and help us keep improving. Takes 10 seconds!</p>
+      </div>
+      <div>
+        <div style="font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:10px;text-align:center">How was your visit?</div>
+        <div class="rating-quick" id="feedbackStars">
+          <button class="rq-btn" data-val="1" title="Poor">&#128577;</button>
+          <button class="rq-btn" data-val="2" title="Below Average">&#128528;</button>
+          <button class="rq-btn" data-val="3" title="Good">&#128578;</button>
+          <button class="rq-btn" data-val="4" title="Very Good">&#128512;</button>
+          <button class="rq-btn" data-val="5" title="Excellent">&#129321;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section-sm" style="background:var(--primary);text-align:center">
+  <div class="container">
+    <h2 style="color:white;margin-bottom:12px">Ready to Book Your Appointment?</h2>
+    <p style="color:rgba(255,255,255,0.8);max-width:440px;margin:0 auto 28px">Skip the back-and-forth — book online in 2 minutes and get an instant confirmation.</p>
+    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+      <a href="appointment.html" class="btn btn-white btn-lg">
+        <i class="far fa-calendar-check"></i> Book Online Now
+      </a>
+      <a href="location.html" class="btn btn-outline btn-lg" style="border-color:rgba(255,255,255,.4);color:white">
+        <i class="fas fa-map-marker-alt"></i> Find Us
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="logo">
+          <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M12 2C9.5 2 7.5 3.5 6.5 5.5C5.5 3.5 3 2 2 5C1 8 3 11 5 12.5C5 16 6 22 8 22C9 22 9.5 20.5 10 19C10.5 17.5 11 16 12 16C13 16 13.5 17.5 14 19C14.5 20.5 15 22 16 22C18 22 19 16 19 12.5C21 11 23 8 22 5C21 2 18.5 3.5 17.5 5.5C16.5 3.5 14.5 2 12 2Z"/></svg></div>
+          BrightSmile
+        </a>
+        <p>Creating healthy, beautiful smiles for families across Pune since 2009.</p>
+        <div class="social-links" style="margin-top:20px">
+          <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="social-link"><i class="fab fa-whatsapp"></i></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>Quick Links</h5>
+        <ul class="footer-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="gallery.html">Gallery</a></li>
+          <li><a href="reviews.html">Reviews</a></li>
+          <li><a href="appointment.html">Book Appointment</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Services</h5>
+        <ul class="footer-links">
+          <li><a href="services.html#general">General Dentistry</a></li>
+          <li><a href="services.html#cosmetic">Cosmetic Dentistry</a></li>
+          <li><a href="services.html#implants">Dental Implants</a></li>
+          <li><a href="services.html#ortho">Orthodontics</a></li>
+          <li><a href="services.html#emergency">Emergency Dental</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Contact</h5>
+        <div class="footer-contact">
+          <div class="footer-contact-item"><span class="footer-contact-icon"><i class="fas fa-map-marker-alt"></i></span><span>14, Dental Plaza, FC Road, Deccan Gymkhana, Pune 411004</span></div>
+          <div class="footer-contact-item"><span class="footer-contact-icon"><i class="fas fa-phone"></i></span><span>+91 20 1234 5678</span></div>
+          <div class="footer-contact-item"><span class="footer-contact-icon"><i class="fas fa-envelope"></i></span><span>hello@brightsmile.in</span></div>
+          <div class="footer-contact-item"><span class="footer-contact-icon"><i class="fas fa-clock"></i></span><span>Mon–Sat: 9 AM–8 PM · Sun: 10–2 PM</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 BrightSmile Dental Clinic. All rights reserved.</p>
+      <p>&#129463; Made with care for your smile</p>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script>
+// Subject chips
+document.querySelectorAll('.chip').forEach(chip => {
+  chip.addEventListener('click', function () {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+    this.classList.add('selected');
+    document.getElementById('subjectInput').value = this.dataset.subject;
+    document.getElementById('subjectDisplay').value = this.dataset.subject;
+  });
+});
+
+// FAQ toggle
+function toggleFaq(el) {
+  const row = el.closest('.faq-row');
+  const isOpen = row.classList.contains('open');
+  document.querySelectorAll('.faq-row').forEach(r => r.classList.remove('open'));
+  if (!isOpen) row.classList.add('open');
+}
+
+// Quick feedback emoji
+document.querySelectorAll('.rq-btn').forEach(btn => {
+  btn.addEventListener('click', function () {
+    const val = this.dataset.val;
+    const msgs = { 1:'Thanks for letting us know. We are sorry about your experience and will do better.', 2:'Thank you for the feedback. We will work on improving your experience.', 3:'Thank you! We are glad you had a good visit. We will keep improving.', 4:'That is great to hear! We look forward to seeing you again.', 5:'Thank you so much! Your kind words mean everything to our team.' };
+    showQuickToast(msgs[val] || 'Thank you for your feedback!');
+    document.querySelectorAll('.rq-btn').forEach(b => b.style.transform = '');
+    this.style.transform = 'scale(1.3)';
+  });
+});
+
+function showQuickToast(msg) {
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+  const t = document.createElement('div');
+  t.className = 'toast success';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  requestAnimationFrame(() => t.classList.add('show'));
+  setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 4500);
+}
+</script>
+</body>
+</html>

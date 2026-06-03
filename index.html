@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BrightSmile Dental Clinic — Your Trusted Family Dentist</title>
+  <meta name="description" content="BrightSmile Dental Clinic offers complete dental care — from cleanings to cosmetic dentistry. Book your appointment today in Mumbai.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .hero-img-placeholder {
+      width: 100%; height: 100%;
+      background: linear-gradient(135deg, #E8F7F3 0%, #C5EBE0 40%, #A0D8CA 100%);
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+    .hero-img-illustration {
+      font-size: 8rem; opacity: 0.6;
+      animation: float 3s ease-in-out infinite;
+    }
+    .why-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 64px;
+      align-items: center; margin-top: 48px;
+    }
+    .why-list { list-style: none; display: flex; flex-direction: column; gap: 20px; }
+    .why-item { display: flex; gap: 16px; align-items: flex-start; }
+    .why-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: var(--primary-pale); color: var(--primary);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; flex-shrink: 0;
+    }
+    .why-img {
+      border-radius: var(--radius-lg); overflow: hidden;
+      background: linear-gradient(135deg, #E8F7F3, #C5EBE0);
+      aspect-ratio: 1; display: flex; align-items: center;
+      justify-content: center; font-size: 6rem;
+    }
+    .emergency-bar {
+      background: var(--accent); padding: 12px 0; text-align: center;
+    }
+    .emergency-bar p {
+      color: white; font-weight: 600; font-size: 0.9rem; margin: 0;
+    }
+    .emergency-bar a { color: white; text-decoration: underline; }
+    .insurance-logos {
+      display: flex; flex-wrap: wrap; gap: 24px; align-items: center;
+      justify-content: center; margin-top: 40px; filter: grayscale(100%); opacity: 0.5;
+    }
+    .insurance-logo {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 12px 24px;
+      font-weight: 700; font-size: 0.85rem; color: var(--text-mid);
+      letter-spacing: 0.05em;
+    }
+    .floating-cta {
+      position: fixed; bottom: 24px; right: 24px; z-index: 998;
+    }
+    @media (max-width: 768px) {
+      .why-grid { grid-template-columns: 1fr; }
+      .why-img { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── EMERGENCY BAR ─── -->
+<div class="emergency-bar">
+  <p>🦷 Dental Emergency? Call us now: <a href="tel:+912012345678">+91 20 1234 5678</a> — We offer same-day emergency appointments!</p>
+</div>
+
+<!-- ─── NAVBAR ─── -->
+<nav class="navbar" id="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2C9.5 2 7.5 3.5 6.5 5.5C5.5 3.5 3 2 2 5C1 8 3 11 5 12.5C5 16 6 22 8 22C9 22 9.5 20.5 10 19C10.5 17.5 11 16 12 16C13 16 13.5 17.5 14 19C14.5 20.5 15 22 16 22C18 22 19 16 19 12.5C21 11 23 8 22 5C21 2 18.5 3.5 17.5 5.5C16.5 3.5 14.5 2 12 2Z"/>
+        </svg>
+      </div>
+      BrightSmile
+    </a>
+
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="services.html">Services</a></li>
+      <li><a href="about.html">About Us</a></li>
+      <li><a href="gallery.html">Gallery</a></li>
+      <li><a href="reviews.html">Reviews</a></li>
+      <li><a href="location.html">Location</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+
+    <div class="nav-cta">
+      <span class="nav-phone"><i class="fas fa-phone"></i> +91 20 1234 5678</span>
+      <a href="appointment.html" class="btn btn-primary btn-sm">Book Appointment</a>
+    </div>
+
+    <div class="hamburger" id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<!-- ─── MOBILE NAV ─── -->
+<div class="mobile-nav" id="mobileNav">
+  <a href="index.html">🏠 Home</a>
+  <a href="services.html">🦷 Services</a>
+  <a href="about.html">👨‍⚕️ About Us</a>
+  <a href="gallery.html">🖼 Gallery</a>
+  <a href="reviews.html">⭐ Reviews</a>
+  <a href="location.html">📍 Location</a>
+  <a href="contact.html">✉️ Contact</a>
+  <a href="appointment.html" style="background:var(--primary);color:white;text-align:center;margin-top:8px;border-radius:var(--radius-sm);">📅 Book Appointment</a>
+</div>
+
+<!-- ─── HERO ─── -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div class="hero-content">
+        <div class="hero-tag animate-up">
+          <i class="fas fa-star" style="color:var(--accent)"></i>
+          Rated #1 Dental Clinic in Pune 2024
+        </div>
+        <h1 class="hero-title animate-up delay-1">
+          Your <em>Perfect Smile</em><br>Starts Here
+        </h1>
+        <p class="lead animate-up delay-2">
+          Experience world-class dental care in a warm, welcoming environment. From routine check-ups to complete smile makeovers — we treat every patient like family.
+        </p>
+        <div class="hero-actions animate-up delay-3">
+          <a href="appointment.html" class="btn btn-primary btn-lg">
+            <i class="far fa-calendar-check"></i> Book Free Consultation
+          </a>
+          <a href="services.html" class="btn btn-outline btn-lg">
+            Explore Services
+          </a>
+        </div>
+        <div class="hero-stats animate-up delay-4">
+          <div>
+            <div class="hero-stat-num" data-counter data-target="4500" data-suffix="+">0</div>
+            <div class="hero-stat-label">Happy Patients</div>
+          </div>
+          <div>
+            <div class="hero-stat-num" data-counter data-target="15" data-suffix="yr">0</div>
+            <div class="hero-stat-label">Experience</div>
+          </div>
+          <div>
+            <div class="hero-stat-num" data-counter data-target="12">0</div>
+            <div class="hero-stat-label">Specialists</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="hero-img-wrap">
+          <div class="hero-img-placeholder">
+            <div class="hero-img-illustration">🦷</div>
+          </div>
+        </div>
+        <div class="hero-badge hero-badge-1 float">
+          <div class="badge-icon">⭐</div>
+          <div class="badge-val">4.9</div>
+          <div class="badge-label">Google Rating</div>
+        </div>
+        <div class="hero-badge hero-badge-2 float" style="animation-delay:1.5s">
+          <div class="badge-icon">🏆</div>
+          <div class="badge-val">ISO</div>
+          <div class="badge-label">Certified Clinic</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── STATS BANNER ─── -->
+<div class="stats-banner">
+  <div class="container">
+    <div class="stats-grid">
+      <div data-animate>
+        <div class="stat-num" data-counter data-target="4500" data-suffix="+">0</div>
+        <div class="stat-label">Patients Served</div>
+      </div>
+      <div data-animate data-delay="100">
+        <div class="stat-num" data-counter data-target="98" data-suffix="%">0</div>
+        <div class="stat-label">Satisfaction Rate</div>
+      </div>
+      <div data-animate data-delay="200">
+        <div class="stat-num" data-counter data-target="15" data-suffix="yr">0</div>
+        <div class="stat-label">Years of Excellence</div>
+      </div>
+      <div data-animate data-delay="300">
+        <div class="stat-num" data-counter data-target="12">0</div>
+        <div class="stat-label">Expert Dentists</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── SERVICES PREVIEW ─── -->
+<section class="section">
+  <div class="container">
+    <div style="text-align:center; max-width:600px; margin:0 auto 16px;">
+      <div class="section-label">Our Services</div>
+      <h2>Complete Dental Care<br>Under One Roof</h2>
+      <p class="lead" style="margin-top:12px">From preventive care to advanced cosmetic treatments, our expert team has everything covered for your family's dental health.</p>
+    </div>
+
+    <div class="services-grid">
+      <div class="service-card" data-animate>
+        <div class="service-icon">🦷</div>
+        <h4>General Dentistry</h4>
+        <p>Comprehensive check-ups, cleanings, fillings, and preventive care to keep your smile healthy year-round.</p>
+        <a href="services.html#general" class="service-link">Learn more <i class="fas fa-arrow-right"></i></a>
+      </div>
+      <div class="service-card" data-animate data-delay="100">
+        <div class="service-icon">✨</div>
+        <h4>Cosmetic Dentistry</h4>
+        <p>Teeth whitening, veneers, bonding, and full smile makeovers to give you the confidence to shine.</p>
+        <a href="services.html#cosmetic" class="service-link">Learn more <i class="fas fa-arrow-right"></i></a>
+      </div>
+      <div class="service-card" data-animate data-delay="200">
+        <div class="service-icon">👑</div>
+        <h4>Dental Implants</h4>
+        <p>Permanent, natural-looking tooth replacements that restore function and beauty with lasting results.</p>
+        <a href="services.html#implants" class="service-link">Learn more <i class="fas fa-arrow-right"></i></a>
+      </div>
+      <div class="service-card" data-animate data-delay="300">
+        <div class="service-icon">😬</div>
+        <h4>Orthodontics</h4>
+        <p>Braces and clear aligners for children, teens, and adults — achieve a perfectly aligned smile at any age.</p>
+        <a href="services.html#ortho" class="service-link">Learn more <i class="fas fa-arrow-right"></i></a>
+      </div>
+      <div class="service-card" data-animate data-delay="400">
+        <div class="service-icon">👶</div>
+        <h4>Pediatric Dentistry</h4>
+        <p>Kid-friendly dental care in a fun, gentle environment. Building great oral habits from day one.</p>
+        <a href="services.html#pediatric" class="service-link">Learn more <i class="fas fa-arrow-right"></i></a>
+      </div>
+      <div class="service-card" data-animate data-delay="500">
+        <div class="service-icon">🚨</div>
+        <h4>Emergency Dental</h4>
+        <p>Same-day emergency appointments for toothaches, broken teeth, and dental trauma. We're here when you need us.</p>
+        <a href="services.html#emergency" class="service-link">Learn more <i class="fas fa-arrow-right"></i></a>
+      </div>
+    </div>
+
+    <div style="text-align:center; margin-top:48px">
+      <a href="services.html" class="btn btn-outline btn-lg">View All Services</a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── WHY CHOOSE US ─── -->
+<section class="section" style="background:var(--cream)">
+  <div class="container">
+    <div class="why-grid">
+      <div>
+        <div class="section-label">Why BrightSmile</div>
+        <h2>Dental Care You Can <em>Trust</em></h2>
+        <p style="margin:16px 0 32px">We combine cutting-edge technology with a compassionate approach to deliver an exceptional dental experience every single visit.</p>
+        <ul class="why-list">
+          <li class="why-item" data-animate>
+            <div class="why-icon"><i class="fas fa-microscope"></i></div>
+            <div>
+              <h4>Advanced Technology</h4>
+              <p style="font-size:0.9rem;margin-top:4px">Digital X-rays, 3D scanning, laser dentistry, and CAD/CAM same-day crowns for precise, comfortable treatment.</p>
+            </div>
+          </li>
+          <li class="why-item" data-animate data-delay="100">
+            <div class="why-icon"><i class="fas fa-user-md"></i></div>
+            <div>
+              <h4>Expert Specialists</h4>
+              <p style="font-size:0.9rem;margin-top:4px">12 board-certified dentists with advanced training across all specialties, serving your whole family under one roof.</p>
+            </div>
+          </li>
+          <li class="why-item" data-animate data-delay="200">
+            <div class="why-icon"><i class="fas fa-shield-alt"></i></div>
+            <div>
+              <h4>Safety First</h4>
+              <p style="font-size:0.9rem;margin-top:4px">ISO-certified sterilization protocols. Every instrument autoclaved, every surface sanitized. Your safety is our top priority.</p>
+            </div>
+          </li>
+          <li class="why-item" data-animate data-delay="300">
+            <div class="why-icon"><i class="fas fa-credit-card"></i></div>
+            <div>
+              <h4>Flexible Payment Options</h4>
+              <p style="font-size:0.9rem;margin-top:4px">EMI options, all major insurance accepted, and transparent pricing with no hidden fees — ever.</p>
+            </div>
+          </li>
+        </ul>
+        <a href="about.html" class="btn btn-primary" style="margin-top:32px">Meet Our Team</a>
+      </div>
+      <div class="why-img" data-animate>
+        🩺
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── REVIEWS PREVIEW ─── -->
+<section class="section">
+  <div class="container">
+    <div style="text-align:center; max-width:520px; margin:0 auto 16px;">
+      <div class="section-label">Patient Reviews</div>
+      <h2>What Our Patients Are Saying</h2>
+      <p style="margin-top:12px">Over 4,500 smiles transformed. Here's what some of our patients have to say.</p>
+    </div>
+
+    <!-- Rating summary -->
+    <div style="display:flex;align-items:center;justify-content:center;gap:24px;margin:32px 0;flex-wrap:wrap;">
+      <div style="text-align:center">
+        <div style="font-family:var(--font-display);font-size:3.5rem;color:var(--primary);line-height:1">4.9</div>
+        <div style="color:var(--accent);font-size:1.2rem;margin:4px 0">★★★★★</div>
+        <div style="font-size:0.85rem;color:var(--text-muted)">Average Rating</div>
+      </div>
+      <div style="width:1px;height:80px;background:var(--border)"></div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;align-items:center;gap:8px;font-size:0.85rem">
+          <span style="color:var(--text-muted);width:14px">5★</span>
+          <div style="flex:1;height:8px;background:var(--sand);border-radius:4px;overflow:hidden;min-width:160px">
+            <div style="width:89%;height:100%;background:var(--accent);border-radius:4px"></div>
+          </div>
+          <span style="color:var(--text-muted)">89%</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:0.85rem">
+          <span style="color:var(--text-muted);width:14px">4★</span>
+          <div style="flex:1;height:8px;background:var(--sand);border-radius:4px;overflow:hidden">
+            <div style="width:8%;height:100%;background:var(--accent);border-radius:4px;opacity:0.6"></div>
+          </div>
+          <span style="color:var(--text-muted)">8%</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:0.85rem">
+          <span style="color:var(--text-muted);width:14px">3★</span>
+          <div style="flex:1;height:8px;background:var(--sand);border-radius:4px;overflow:hidden">
+            <div style="width:3%;height:100%;background:var(--accent);border-radius:4px;opacity:0.4"></div>
+          </div>
+          <span style="color:var(--text-muted)">3%</span>
+        </div>
+      </div>
+      <div style="width:1px;height:80px;background:var(--border)"></div>
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/24px-Google_%22G%22_Logo.svg.png" alt="Google" width="20">
+          <span style="font-size:0.85rem;font-weight:600">Google: 4.9 ★</span>
+        </div>
+        <div style="font-size:0.85rem;color:var(--text-muted)">Based on 380+ reviews</div>
+      </div>
+    </div>
+
+    <div class="reviews-grid">
+      <div class="review-card" data-animate>
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">"After years of dental anxiety, BrightSmile completely changed my experience. Dr. Sharma was incredibly patient, explained everything, and the clinic is spotlessly clean. My root canal was genuinely painless!"</p>
+        <div class="reviewer">
+          <div class="reviewer-avatar">PK</div>
+          <div>
+            <div class="reviewer-name">Priya Krishnamurthy</div>
+            <div class="reviewer-date">Google Review · 2 weeks ago</div>
+          </div>
+        </div>
+      </div>
+      <div class="review-card" data-animate data-delay="100">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">"Brought my 7-year-old here and he actually enjoyed going to the dentist! The pediatric team was amazing — so gentle and fun. The clinic setup is beautiful and very hygienic. Highly recommended for families."</p>
+        <div class="reviewer">
+          <div class="reviewer-avatar">RM</div>
+          <div>
+            <div class="reviewer-name">Rahul Mehta</div>
+            <div class="reviewer-date">Google Review · 1 month ago</div>
+          </div>
+        </div>
+      </div>
+      <div class="review-card" data-animate data-delay="200">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">"Got my smile makeover done here — 8 veneers plus whitening. The results are absolutely stunning. Dr. Patel's attention to detail is extraordinary. Worth every rupee. I've never felt so confident!"</p>
+        <div class="reviewer">
+          <div class="reviewer-avatar">AS</div>
+          <div>
+            <div class="reviewer-name">Ananya Singh</div>
+            <div class="reviewer-date">Google Review · 3 weeks ago</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:40px">
+      <a href="reviews.html" class="btn btn-outline">Read All Reviews</a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── APPOINTMENT CTA ─── -->
+<section class="section-sm">
+  <div class="container">
+    <div class="appt-section">
+      <div class="appt-grid">
+        <div class="appt-info">
+          <div class="section-label" style="background:rgba(255,255,255,0.15);color:white;">Quick Booking</div>
+          <h2>Ready for Your Best Smile?</h2>
+          <p>Book your appointment in under 2 minutes. No waiting, no hassle — just great dental care at your convenience.</p>
+          <div class="appt-feature">
+            <div class="appt-feature-icon">📅</div>
+            <div class="appt-feature-text">
+              <span class="appt-feature-label">Same-Day Available</span>
+              Emergency and urgent appointments available daily
+            </div>
+          </div>
+          <div class="appt-feature">
+            <div class="appt-feature-icon">💳</div>
+            <div class="appt-feature-text">
+              <span class="appt-feature-label">Insurance Accepted</span>
+              All major health plans and cashless facility
+            </div>
+          </div>
+          <div class="appt-feature">
+            <div class="appt-feature-icon">🔔</div>
+            <div class="appt-feature-text">
+              <span class="appt-feature-label">Reminder Calls</span>
+              We remind you 24 hours before your visit
+            </div>
+          </div>
+        </div>
+        <div class="appt-form-wrap">
+          <h3>Book an Appointment</h3>
+          <form data-ajax data-type="appointment" data-success="Appointment request received! We'll confirm within 2 hours.">
+            <div class="form-row">
+              <div class="form-group">
+                <label>First Name <span class="form-required">*</span></label>
+                <input type="text" name="firstName" placeholder="Priya" required>
+              </div>
+              <div class="form-group">
+                <label>Last Name <span class="form-required">*</span></label>
+                <input type="text" name="lastName" placeholder="Sharma">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Phone <span class="form-required">*</span></label>
+                <input type="tel" name="phone" placeholder="+91 98765 43210" required>
+              </div>
+              <div class="form-group">
+                <label>Preferred Date <span class="form-required">*</span></label>
+                <input type="date" name="date" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Service Needed</label>
+              <select name="service">
+                <option value="">Select a service...</option>
+                <option>General Check-up & Cleaning</option>
+                <option>Teeth Whitening</option>
+                <option>Dental Implant</option>
+                <option>Orthodontic Consultation</option>
+                <option>Root Canal Treatment</option>
+                <option>Pediatric Dentistry</option>
+                <option>Emergency Dental Care</option>
+                <option>Veneers / Smile Makeover</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%">
+              <i class="far fa-calendar-check"></i> Confirm Appointment
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── INSURANCE PARTNERS ─── -->
+<section class="section-sm" style="background:var(--cream)">
+  <div class="container" style="text-align:center">
+    <p style="font-size:0.85rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted)">Accepted Insurance & Payment Partners</p>
+    <div class="insurance-logos">
+      <div class="insurance-logo">HDFC ERGO</div>
+      <div class="insurance-logo">STAR HEALTH</div>
+      <div class="insurance-logo">NIVA BUPA</div>
+      <div class="insurance-logo">CARE HEALTH</div>
+      <div class="insurance-logo">MAX BUPA</div>
+      <div class="insurance-logo">BAJAJ ALLIANZ</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="logo">
+          <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M12 2C9.5 2 7.5 3.5 6.5 5.5C5.5 3.5 3 2 2 5C1 8 3 11 5 12.5C5 16 6 22 8 22C9 22 9.5 20.5 10 19C10.5 17.5 11 16 12 16C13 16 13.5 17.5 14 19C14.5 20.5 15 22 16 22C18 22 19 16 19 12.5C21 11 23 8 22 5C21 2 18.5 3.5 17.5 5.5C16.5 3.5 14.5 2 12 2Z"/></svg></div>
+          BrightSmile
+        </a>
+        <p>Creating healthy, beautiful smiles for families across Pune since 2009. Your comfort and confidence is our mission.</p>
+        <div class="social-links" style="margin-top:20px">
+          <a href="#" class="social-link" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="social-link" title="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="social-link" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+          <a href="#" class="social-link" title="YouTube"><i class="fab fa-youtube"></i></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>Quick Links</h5>
+        <ul class="footer-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="services.html">Our Services</a></li>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="gallery.html">Clinic Gallery</a></li>
+          <li><a href="reviews.html">Patient Reviews</a></li>
+          <li><a href="appointment.html">Book Appointment</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Services</h5>
+        <ul class="footer-links">
+          <li><a href="services.html#general">General Dentistry</a></li>
+          <li><a href="services.html#cosmetic">Cosmetic Dentistry</a></li>
+          <li><a href="services.html#implants">Dental Implants</a></li>
+          <li><a href="services.html#ortho">Orthodontics</a></li>
+          <li><a href="services.html#pediatric">Pediatric Dentistry</a></li>
+          <li><a href="services.html#emergency">Emergency Dental</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Contact Us</h5>
+        <div class="footer-contact">
+          <div class="footer-contact-item">
+            <span class="footer-contact-icon"><i class="fas fa-map-marker-alt"></i></span>
+            <span>14, Dental Plaza, FC Road, Deccan Gymkhana, Pune 411004</span>
+          </div>
+          <div class="footer-contact-item">
+            <span class="footer-contact-icon"><i class="fas fa-phone"></i></span>
+            <span>+91 20 1234 5678</span>
+          </div>
+          <div class="footer-contact-item">
+            <span class="footer-contact-icon"><i class="fas fa-envelope"></i></span>
+            <span>hello@brightsmile.in</span>
+          </div>
+          <div class="footer-contact-item">
+            <span class="footer-contact-icon"><i class="fas fa-clock"></i></span>
+            <span>Mon–Sat: 9 AM – 8 PM<br>Sunday: 10 AM – 2 PM</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 BrightSmile Dental Clinic. All rights reserved. | <a href="#" style="color:var(--primary-light)">Privacy Policy</a></p>
+      <p>🦷 Made with care for your smile</p>
+    </div>
+  </div>
+</footer>
+
+<!-- Floating WhatsApp CTA -->
+<a href="https://wa.me/912012345678" class="floating-cta btn btn-accent" title="Chat on WhatsApp" target="_blank">
+  <i class="fab fa-whatsapp"></i> WhatsApp Us
+</a>
+
+<script src="js/main.js"></script>
+</body>
+</html>

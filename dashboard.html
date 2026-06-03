@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dentist Dashboard — BrightSmile Dental Clinic</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body { background: var(--cream); }
+
+    /* ── SIDEBAR ── */
+    .dash-layout { display: flex; min-height: 100vh; }
+    .sidebar {
+      width: 240px; flex-shrink: 0;
+      background: var(--text-dark); color: white;
+      display: flex; flex-direction: column;
+      position: fixed; top: 0; left: 0; bottom: 0; z-index: 200;
+      transition: transform 0.3s ease;
+    }
+    .sidebar-logo {
+      padding: 24px 20px; border-bottom: 1px solid rgba(255,255,255,0.08);
+      display: flex; align-items: center; gap: 10px;
+      font-family: var(--font-display); font-size: 1.2rem; color: white;
+    }
+    .sidebar-logo .logo-icon { background: var(--primary); }
+    .sidebar-nav { flex: 1; padding: 16px 0; overflow-y: auto; }
+    .nav-section-label {
+      padding: 12px 20px 6px;
+      font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.1em; color: rgba(255,255,255,0.35);
+    }
+    .sidebar-link {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 20px; font-size: 0.875rem; font-weight: 500;
+      color: rgba(255,255,255,0.65); text-decoration: none;
+      transition: var(--transition); border-left: 3px solid transparent;
+      cursor: pointer;
+    }
+    .sidebar-link:hover { background: rgba(255,255,255,0.06); color: white; }
+    .sidebar-link.active {
+      background: rgba(26,127,100,0.2); color: white;
+      border-left-color: var(--primary);
+    }
+    .sidebar-link i { width: 18px; text-align: center; font-size: 0.9rem; }
+    .sidebar-badge {
+      margin-left: auto; background: var(--primary);
+      color: white; font-size: 0.65rem; font-weight: 700;
+      padding: 2px 7px; border-radius: 99px;
+    }
+    .sidebar-footer {
+      padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.08);
+      font-size: 0.78rem; color: rgba(255,255,255,0.4);
+    }
+    .sidebar-user {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+    }
+    .sidebar-avatar {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: var(--primary); color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem; font-weight: 700; flex-shrink: 0;
+    }
+    .sidebar-uname { font-size: 0.82rem; font-weight: 600; color: rgba(255,255,255,.75); }
+    .sidebar-urole { font-size: 0.7rem; color: rgba(255,255,255,.4); }
+
+    /* ── MAIN AREA ── */
+    .dash-main {
+      margin-left: 240px; flex: 1;
+      padding: 0; min-height: 100vh;
+    }
+    .dash-topbar {
+      background: var(--white); border-bottom: 1px solid var(--border);
+      padding: 0 28px; height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .topbar-title { font-weight: 700; font-size: 1.05rem; color: var(--text-dark); }
+    .topbar-right { display: flex; align-items: center; gap: 16px; }
+    .topbar-date { font-size: 0.82rem; color: var(--text-muted); }
+    .notif-btn {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--cream); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; position: relative; transition: var(--transition);
+    }
+    .notif-btn:hover { background: var(--primary-pale); }
+    .notif-dot {
+      position: absolute; top: 8px; right: 8px;
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--danger); border: 2px solid white;
+    }
+    .dash-content { padding: 28px; }
+
+    /* ── SECTION PANELS ── */
+    .dash-panel { display: none; }
+    .dash-panel.active { display: block; animation: fadeIn .3s ease; }
+
+    /* ── STAT CARDS ── */
+    .kpi-grid {
+      display: grid; grid-template-columns: repeat(4,1fr); gap: 18px;
+      margin-bottom: 24px;
+    }
+    .kpi-card {
+      background: var(--white); border-radius: var(--radius-md);
+      border: 1px solid var(--border); padding: 20px 22px;
+      transition: var(--transition);
+    }
+    .kpi-card:hover { box-shadow: var(--shadow-sm); }
+    .kpi-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
+    .kpi-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+    }
+    .kpi-icon.g { background: var(--primary-pale); }
+    .kpi-icon.a { background: var(--accent-light); }
+    .kpi-icon.b { background: #EBF4FF; }
+    .kpi-icon.p { background: #F0E8FE; }
+    .kpi-trend {
+      display: flex; align-items: center; gap: 3px;
+      font-size: 0.75rem; font-weight: 700;
+    }
+    .kpi-trend.up { color: var(--success); }
+    .kpi-trend.down { color: var(--danger); }
+    .kpi-num {
+      font-family: var(--font-display); font-size: 2.2rem;
+      color: var(--text-dark); line-height: 1; margin-bottom: 4px;
+    }
+    .kpi-label { font-size: 0.8rem; color: var(--text-muted); }
+
+    /* ── CHART CARDS ── */
+    .chart-row { display: grid; grid-template-columns: 1.4fr 1fr; gap: 18px; margin-bottom: 24px; }
+    .chart-card {
+      background: var(--white); border-radius: var(--radius-md);
+      border: 1px solid var(--border); padding: 22px;
+    }
+    .chart-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 18px;
+    }
+    .chart-card-header h4 { font-size: 1rem; }
+    .chart-card-header select {
+      font-size: 0.78rem; padding: 5px 10px;
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      background: var(--white); color: var(--text-mid); outline: none;
+    }
+    canvas { max-width: 100%; }
+
+    /* ── APPOINTMENTS TABLE ── */
+    .table-card {
+      background: var(--white); border-radius: var(--radius-md);
+      border: 1px solid var(--border); overflow: hidden; margin-bottom: 24px;
+    }
+    .table-header {
+      padding: 18px 22px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+    }
+    .table-header h4 { font-size: 1rem; }
+    .table-controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .table-search {
+      padding: 8px 12px; border: 1px solid var(--border);
+      border-radius: var(--radius-sm); font-size: 0.82rem;
+      outline: none; width: 200px; transition: var(--transition);
+    }
+    .table-search:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-pale); }
+    .table-filter {
+      padding: 8px 12px; border: 1px solid var(--border);
+      border-radius: var(--radius-sm); font-size: 0.82rem;
+      background: var(--white); outline: none; cursor: pointer;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { background: var(--cream); }
+    th {
+      padding: 11px 16px; text-align: left;
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--text-muted);
+      border-bottom: 1px solid var(--border); white-space: nowrap;
+    }
+    td {
+      padding: 13px 16px; font-size: 0.85rem; color: var(--text-dark);
+      border-bottom: 1px solid var(--border); vertical-align: middle;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--primary-pale); }
+    .status-badge {
+      display: inline-block; padding: 3px 10px; border-radius: 99px;
+      font-size: 0.72rem; font-weight: 700;
+    }
+    .status-pending  { background: var(--accent-light); color: #92400E; }
+    .status-confirmed{ background: #ECFDF5; color: #065F46; }
+    .status-completed{ background: #EBF4FF; color: #1E40AF; }
+    .status-cancelled{ background: #FEF2F2; color: #991B1B; }
+    .action-btns { display: flex; gap: 6px; }
+    .tbl-btn {
+      width: 28px; height: 28px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border); background: var(--white);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 0.75rem; color: var(--text-muted);
+      transition: var(--transition);
+    }
+    .tbl-btn:hover.confirm { background: #ECFDF5; color: var(--success); border-color: var(--success); }
+    .tbl-btn:hover.cancel  { background: #FEF2F2; color: var(--danger);  border-color: var(--danger); }
+    .tbl-btn:hover.view    { background: var(--primary-pale); color: var(--primary); border-color: var(--primary); }
+    .empty-table {
+      text-align: center; padding: 48px; color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    .empty-table .icon { font-size: 2.5rem; margin-bottom: 10px; }
+    .pagination {
+      padding: 14px 22px; border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 0.82rem; color: var(--text-muted);
+    }
+    .page-btns { display: flex; gap: 4px; }
+    .page-btn {
+      width: 30px; height: 30px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border); background: var(--white);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 0.78rem; font-weight: 600;
+      transition: var(--transition);
+    }
+    .page-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+    .page-btn:hover:not(.active) { background: var(--primary-pale); color: var(--primary); }
+
+    /* ── REVIEWS PANEL ── */
+    .reviews-dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .review-dash-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius-md); padding: 18px;
+    }
+    .rdc-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
+    .rdc-stars { color: var(--accent); font-size: 0.85rem; }
+    .rdc-text { font-size: 0.875rem; color: var(--text-mid); line-height: 1.6; margin-bottom: 12px; }
+    .rdc-meta { font-size: 0.75rem; color: var(--text-muted); }
+    .rdc-reply { margin-top: 12px; padding: 10px; background: var(--primary-pale); border-radius: var(--radius-sm); border-left: 3px solid var(--primary); }
+    .rdc-reply p { font-size: 0.78rem; color: var(--text-mid); margin: 0; }
+    .rdc-reply strong { font-size: 0.72rem; color: var(--primary); display: block; margin-bottom: 3px; }
+
+    /* ── MINI CHART (bar) ── */
+    .bar-chart { display: flex; align-items: flex-end; gap: 6px; height: 120px; margin-top: 8px; }
+    .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .bar-fill {
+      width: 100%; background: var(--primary); border-radius: 4px 4px 0 0;
+      transition: height 1s ease; min-height: 4px;
+    }
+    .bar-fill.accent { background: var(--accent); }
+    .bar-label { font-size: 0.62rem; color: var(--text-muted); text-align: center; }
+    .bar-val { font-size: 0.65rem; font-weight: 700; color: var(--text-mid); }
+
+    /* ── DONUT CHART ── */
+    .donut-wrap { position: relative; width: 140px; height: 140px; margin: 0 auto; }
+    .donut-wrap svg { transform: rotate(-90deg); }
+    .donut-center {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      text-align: center;
+    }
+    .donut-center-num { font-family: var(--font-display); font-size: 1.6rem; color: var(--text-dark); line-height: 1; }
+    .donut-center-lbl { font-size: 0.65rem; color: var(--text-muted); }
+    .donut-legend { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
+    .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: var(--text-mid); }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+    /* ── TODAY SCHEDULE ── */
+    .schedule-list { display: flex; flex-direction: column; gap: 10px; }
+    .sched-item {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 12px 16px;
+      transition: var(--transition);
+    }
+    .sched-item:hover { border-color: var(--primary); }
+    .sched-time { font-size: 0.78rem; font-weight: 700; color: var(--primary); width: 64px; flex-shrink: 0; }
+    .sched-name { font-weight: 600; font-size: 0.875rem; }
+    .sched-svc  { font-size: 0.75rem; color: var(--text-muted); }
+    .sched-dot  { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-left: auto; }
+    .dot-confirmed { background: var(--success); }
+    .dot-pending   { background: var(--accent); }
+
+    /* ── QUICK ACTIONS PANEL ── */
+    .qa-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 24px; }
+    .qa-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius-md); padding: 20px; text-align: center;
+      cursor: pointer; transition: var(--transition); text-decoration: none;
+    }
+    .qa-card:hover { border-color: var(--primary); box-shadow: var(--shadow-sm); transform: translateY(-2px); }
+    .qa-ico { font-size: 1.8rem; margin-bottom: 8px; }
+    .qa-lbl { font-weight: 700; font-size: 0.85rem; color: var(--text-dark); }
+    .qa-sub { font-size: 0.75rem; color: var(--text-muted); margin-top: 3px; }
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:1100px){
+      .kpi-grid{grid-template-columns:repeat(2,1fr)}
+      .chart-row{grid-template-columns:1fr}
+      .reviews-dash-grid{grid-template-columns:1fr}
+    }
+    @media(max-width:800px){
+      .sidebar{transform:translateX(-100%)}
+      .sidebar.open{transform:translateX(0)}
+      .dash-main{margin-left:0}
+      .qa-grid{grid-template-columns:repeat(2,1fr)}
+    }
+  </style>
+</head>
+<body>
+
+<div class="dash-layout">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:white"><path d="M12 2C9.5 2 7.5 3.5 6.5 5.5C5.5 3.5 3 2 2 5C1 8 3 11 5 12.5C5 16 6 22 8 22C9 22 9.5 20.5 10 19C10.5 17.5 11 16 12 16C13 16 13.5 17.5 14 19C14.5 20.5 15 22 16 22C18 22 19 16 19 12.5C21 11 23 8 22 5C21 2 18.5 3.5 17.5 5.5C16.5 3.5 14.5 2 12 2Z"/></svg>
+      </div>
+      BrightSmile
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Overview</div>
+      <a class="sidebar-link active" onclick="showPanel('overview')"><i class="fas fa-th-large"></i> Dashboard</a>
+      <a class="sidebar-link" onclick="showPanel('appointments')"><i class="fas fa-calendar-check"></i> Appointments <span class="sidebar-badge" id="pendingBadge">0</span></a>
+
+      <div class="nav-section-label">Analytics</div>
+      <a class="sidebar-link" onclick="showPanel('analytics')"><i class="fas fa-chart-bar"></i> Analytics</a>
+      <a class="sidebar-link" onclick="showPanel('reviews-panel')"><i class="fas fa-star"></i> Reviews</a>
+
+      <div class="nav-section-label">Clinic</div>
+      <a class="sidebar-link" href="appointment.html" target="_blank"><i class="fas fa-plus-circle"></i> New Appointment</a>
+      <a class="sidebar-link" href="index.html" target="_blank"><i class="fas fa-globe"></i> View Website</a>
+      <a class="sidebar-link" href="contact.html" target="_blank"><i class="fas fa-envelope"></i> Messages</a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar">AS</div>
+        <div>
+          <div class="sidebar-uname">Dr. Arun Sharma</div>
+          <div class="sidebar-urole">Clinic Director</div>
+        </div>
+      </div>
+      <a href="index.html" style="color:rgba(255,255,255,.4);font-size:.75rem;text-decoration:none">
+        <i class="fas fa-sign-out-alt"></i> Exit Dashboard
+      </a>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <main class="dash-main">
+
+    <!-- Topbar -->
+    <div class="dash-topbar">
+      <div style="display:flex;align-items:center;gap:14px">
+        <button id="sidebarToggle" style="display:none;background:none;border:none;cursor:pointer;font-size:1.2rem;color:var(--text-dark)"><i class="fas fa-bars"></i></button>
+        <div class="topbar-title" id="topbarTitle">Dashboard Overview</div>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-date" id="topbarDate"></div>
+        <div class="notif-btn" title="Notifications"><i class="fas fa-bell" style="font-size:.9rem;color:var(--text-mid)"></i><div class="notif-dot"></div></div>
+        <a href="appointment.html" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> New Booking</a>
+      </div>
+    </div>
+
+    <div class="dash-content">
+
+      <!-- ══════════ OVERVIEW PANEL ══════════ -->
+      <div class="dash-panel active" id="panel-overview">
+
+        <!-- KPIs -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <div class="kpi-icon g">&#128197;</div>
+              <div class="kpi-trend up" id="kpi-trend-appt"><i class="fas fa-arrow-up"></i> 12%</div>
+            </div>
+            <div class="kpi-num" id="kpi-appt" data-counter data-target="0">0</div>
+            <div class="kpi-label">Total Appointments</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <div class="kpi-icon a">&#128176;</div>
+              <div class="kpi-trend up"><i class="fas fa-arrow-up"></i> 8%</div>
+            </div>
+            <div class="kpi-num" id="kpi-rev">&#8377;0</div>
+            <div class="kpi-label">Est. Revenue (This Month)</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <div class="kpi-icon b">&#11088;</div>
+              <div class="kpi-trend up"><i class="fas fa-arrow-up"></i> 2%</div>
+            </div>
+            <div class="kpi-num">4.9</div>
+            <div class="kpi-label">Average Rating</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <div class="kpi-icon p">&#9203;</div>
+              <div class="kpi-trend down" id="kpi-trend-pend"><i class="fas fa-arrow-down"></i></div>
+            </div>
+            <div class="kpi-num" id="kpi-pend">0</div>
+            <div class="kpi-label">Pending Confirmation</div>
+          </div>
+        </div>
+
+        <!-- Charts row -->
+        <div class="chart-row">
+          <!-- Weekly bookings bar chart -->
+          <div class="chart-card">
+            <div class="chart-card-header">
+              <h4>Bookings — Last 7 Days</h4>
+              <span style="font-size:.78rem;color:var(--text-muted)" id="chartSubtitle"></span>
+            </div>
+            <div class="bar-chart" id="weeklyBar"></div>
+          </div>
+
+          <!-- Service donut -->
+          <div class="chart-card">
+            <div class="chart-card-header"><h4>Bookings by Service</h4></div>
+            <div class="donut-wrap">
+              <svg width="140" height="140" viewBox="0 0 140 140">
+                <circle cx="70" cy="70" r="54" fill="none" stroke="var(--sand)" stroke-width="20"/>
+                <circle id="d1" cx="70" cy="70" r="54" fill="none" stroke="var(--primary)" stroke-width="20" stroke-dasharray="0 339.3" stroke-linecap="round"/>
+                <circle id="d2" cx="70" cy="70" r="54" fill="none" stroke="var(--accent)" stroke-width="20" stroke-dasharray="0 339.3" stroke-linecap="round"/>
+                <circle id="d3" cx="70" cy="70" r="54" fill="none" stroke="#6366F1" stroke-width="20" stroke-dasharray="0 339.3" stroke-linecap="round"/>
+                <circle id="d4" cx="70" cy="70" r="54" fill="none" stroke="#EC4899" stroke-width="20" stroke-dasharray="0 339.3" stroke-linecap="round"/>
+              </svg>
+              <div class="donut-center">
+                <div class="donut-center-num" id="donutTotal">0</div>
+                <div class="donut-center-lbl">Total</div>
+              </div>
+            </div>
+            <div class="donut-legend" id="donutLegend"></div>
+          </div>
+        </div>
+
+        <!-- Today's schedule + quick actions -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+          <div class="chart-card">
+            <div class="chart-card-header">
+              <h4>Today's Schedule</h4>
+              <span style="font-size:.78rem;color:var(--text-muted)" id="todayDateLabel"></span>
+            </div>
+            <div class="schedule-list" id="todaySchedule"></div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-card-header"><h4>Quick Actions</h4></div>
+            <div class="qa-grid" style="margin:0">
+              <a href="appointment.html" class="qa-card">
+                <div class="qa-ico">&#128197;</div>
+                <div class="qa-lbl">New Booking</div>
+                <div class="qa-sub">Add appointment</div>
+              </a>
+              <a href="reviews.html" target="_blank" class="qa-card">
+                <div class="qa-ico">&#11088;</div>
+                <div class="qa-lbl">Reviews</div>
+                <div class="qa-sub">View & respond</div>
+              </a>
+              <a href="contact.html" target="_blank" class="qa-card">
+                <div class="qa-ico">&#9993;</div>
+                <div class="qa-lbl">Messages</div>
+                <div class="qa-sub">View inbox</div>
+              </a>
+              <a href="gallery.html" target="_blank" class="qa-card">
+                <div class="qa-ico">&#128444;</div>
+                <div class="qa-lbl">Gallery</div>
+                <div class="qa-sub">Manage photos</div>
+              </a>
+              <a href="index.html" target="_blank" class="qa-card">
+                <div class="qa-ico">&#127760;</div>
+                <div class="qa-lbl">Website</div>
+                <div class="qa-sub">View live site</div>
+              </a>
+              <a onclick="clearData()" class="qa-card" style="border-color:var(--danger)">
+                <div class="qa-ico">&#128465;</div>
+                <div class="qa-lbl" style="color:var(--danger)">Clear Demo Data</div>
+                <div class="qa-sub">Reset localStorage</div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════ APPOINTMENTS PANEL ══════════ -->
+      <div class="dash-panel" id="panel-appointments">
+        <div class="table-card">
+          <div class="table-header">
+            <h4>All Appointments</h4>
+            <div class="table-controls">
+              <input class="table-search" type="text" placeholder="&#128269; Search patient, service..." id="apptSearch">
+              <select class="table-filter" id="apptFilter">
+                <option value="all">All Status</option>
+                <option value="Pending">Pending</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+              <button class="btn btn-primary btn-sm" onclick="addDemoAppointments()">+ Add Demo Data</button>
+            </div>
+          </div>
+          <div style="overflow-x:auto">
+            <table id="apptTable">
+              <thead>
+                <tr>
+                  <th>Booking ID</th>
+                  <th>Patient</th>
+                  <th>Service</th>
+                  <th>Dentist</th>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="apptTbody"></tbody>
+            </table>
+          </div>
+          <div class="pagination">
+            <span id="paginationInfo">Showing 0 of 0</span>
+            <div class="page-btns" id="pageBtns"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════ ANALYTICS PANEL ══════════ -->
+      <div class="dash-panel" id="panel-analytics">
+        <div class="kpi-grid">
+          <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon g">&#128200;</div><div class="kpi-trend up"><i class="fas fa-arrow-up"></i> 15%</div></div><div class="kpi-num">4,521</div><div class="kpi-label">Total Patients</div></div>
+          <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon a">&#128197;</div><div class="kpi-trend up"><i class="fas fa-arrow-up"></i> 9%</div></div><div class="kpi-num">284</div><div class="kpi-label">Appointments This Month</div></div>
+          <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon b">&#128176;</div><div class="kpi-trend up"><i class="fas fa-arrow-up"></i> 22%</div></div><div class="kpi-num">&#8377;4.2L</div><div class="kpi-label">Revenue This Month</div></div>
+          <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon p">&#128257;</div><div class="kpi-trend up"><i class="fas fa-arrow-up"></i> 5%</div></div><div class="kpi-num">68%</div><div class="kpi-label">Patient Return Rate</div></div>
+        </div>
+
+        <div class="chart-row">
+          <div class="chart-card">
+            <div class="chart-card-header"><h4>Monthly Revenue (Last 6 Months)</h4></div>
+            <div class="bar-chart" style="height:140px" id="revenueBar"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-card-header"><h4>New vs Returning Patients</h4></div>
+            <div style="display:flex;gap:24px;align-items:center;justify-content:center;padding:16px 0">
+              <div style="text-align:center">
+                <div style="font-family:var(--font-display);font-size:2.4rem;color:var(--primary)">32%</div>
+                <div style="font-size:.8rem;color:var(--text-muted)">New Patients</div>
+              </div>
+              <div style="width:1px;height:60px;background:var(--border)"></div>
+              <div style="text-align:center">
+                <div style="font-family:var(--font-display);font-size:2.4rem;color:var(--accent)">68%</div>
+                <div style="font-size:.8rem;color:var(--text-muted)">Returning Patients</div>
+              </div>
+            </div>
+            <div class="donut-legend" style="margin-top:12px">
+              <div class="legend-item"><div class="legend-dot" style="background:var(--primary)"></div>New — 144 patients this month</div>
+              <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div>Returning — 307 patients this month</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-row">
+          <div class="chart-card">
+            <div class="chart-card-header"><h4>Top Services by Volume</h4></div>
+            <div id="servicesBar" class="bar-chart" style="height:130px"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-card-header"><h4>Peak Appointment Hours</h4></div>
+            <div id="hoursBar" class="bar-chart" style="height:130px"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════ REVIEWS PANEL ══════════ -->
+      <div class="dash-panel" id="panel-reviews-panel">
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px">
+          <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon g">&#11088;</div><div class="kpi-trend up"><i class="fas fa-arrow-up"></i></div></div><div class="kpi-num">4.9</div><div class="kpi-label">Avg Google Rating</div></div>
+          <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon a">&#128172;</div></div><div class="kpi-num">380</div><div class="kpi-label">Total Reviews</div></div>
+          <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon b">&#128513;</div><div class="kpi-trend up"><i class="fas fa-arrow-up"></i> 3%</div></div><div class="kpi-num">89%</div><div class="kpi-label">5-Star Reviews</div></div>
+          <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon p">&#128226;</div></div><div class="kpi-num">12</div><div class="kpi-label">Awaiting Response</div></div>
+        </div>
+        <div class="reviews-dash-grid" id="reviewsDashGrid"></div>
+      </div>
+
+    </div><!-- /dash-content -->
+  </main>
+</div><!-- /dash-layout -->
+
+<script>
+/* ══════════════════════════
+   HELPERS
+══════════════════════════ */
+function fmtDate(s){if(!s)return'-';const d=new Date(s+'T00:00:00');return d.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});}
+function randBetween(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+
+/* ══════════════════════════
+   DATE IN TOPBAR
+══════════════════════════ */
+document.getElementById('topbarDate').textContent = new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+document.getElementById('todayDateLabel').textContent = new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long'});
+
+/* ══════════════════════════
+   DEMO APPOINTMENTS DATA
+══════════════════════════ */
+const DEMO = [
+  {id:'BS-100234',service:'Teeth Whitening',dentist:'Dr. Meera Patel',date:'2025-06-12',time:'10:00 AM',patient:'Priya Krishnamurthy',phone:'9876543210',status:'Confirmed',price:'Rs.4,000',dur:'90 min'},
+  {id:'BS-100235',service:'Dental Implant Consultation',dentist:'Dr. Arun Sharma',date:'2025-06-12',time:'11:30 AM',patient:'Nikhil Kulkarni',phone:'9823451234',status:'Pending',price:'Free',dur:'30 min'},
+  {id:'BS-100236',service:'General Check-up & Cleaning',dentist:'No Preference',date:'2025-06-13',time:'9:00 AM',patient:'Rahul Mehta',phone:'9712345678',status:'Confirmed',price:'Rs.1,200',dur:'45 min'},
+  {id:'BS-100237',service:'Orthodontic Consultation',dentist:'Dr. Vikram Nair',date:'2025-06-13',time:'3:00 PM',patient:'Tanvi Nair',phone:'9988776655',status:'Pending',price:'Free',dur:'30 min'},
+  {id:'BS-100238',service:'Root Canal Treatment',dentist:'Dr. Anita Reddy',date:'2025-06-14',time:'10:30 AM',patient:'Sanjay Bhandari',phone:'9765432100',status:'Completed',price:'Rs.7,000',dur:'90 min'},
+  {id:'BS-100239',service:'Pediatric Dentistry',dentist:'Dr. Kavya Menon',date:'2025-06-14',time:'4:00 PM',patient:'Sneha Joshi',phone:'9843219876',status:'Confirmed',price:'Rs.400',dur:'30 min'},
+  {id:'BS-100240',service:'Smile Makeover / Veneers',dentist:'Dr. Meera Patel',date:'2025-06-15',time:'11:00 AM',patient:'Ananya Singh',phone:'9654321098',status:'Pending',price:'Rs.96,000',dur:'60 min'},
+  {id:'BS-100241',service:'Gum Treatment',dentist:'No Preference',date:'2025-06-15',time:'2:30 PM',patient:'Deepa Varghese',phone:'9534219870',status:'Cancelled',price:'Rs.3,000',dur:'60 min'},
+];
+
+function addDemoAppointments(){
+  const ex = JSON.parse(localStorage.getItem('bs_appointments')||'[]');
+  const ids = ex.map(a=>a.id);
+  DEMO.forEach(d=>{if(!ids.includes(d.id))ex.push({...d,createdAt:new Date().toISOString()});});
+  localStorage.setItem('bs_appointments',JSON.stringify(ex));
+  loadData(); showToast('Demo appointments added!','success');
+}
+
+function clearData(){
+  if(confirm('Clear all demo data from localStorage?')){
+    localStorage.removeItem('bs_appointments');
+    loadData(); showToast('Data cleared.','');
+  }
+}
+
+/* ══════════════════════════
+   LOAD & RENDER DATA
+══════════════════════════ */
+let allAppts = [];
+let currentPage = 1;
+const PER_PAGE = 8;
+
+function loadData(){
+  allAppts = JSON.parse(localStorage.getItem('bs_appointments')||'[]');
+  renderKPIs();
+  renderWeeklyBar();
+  renderDonut();
+  renderTodaySchedule();
+  renderTable();
+  renderAnalyticsBars();
+  renderReviews();
+  // pending badge
+  const pending = allAppts.filter(a=>a.status==='Pending').length;
+  document.getElementById('pendingBadge').textContent = pending;
+}
+
+/* KPIs */
+function renderKPIs(){
+  const total = allAppts.length;
+  const pending = allAppts.filter(a=>a.status==='Pending').length;
+  // animate number
+  animNum(document.getElementById('kpi-appt'), total);
+  document.getElementById('kpi-pend').textContent = pending;
+  document.getElementById('kpi-rev').textContent = 'Rs.' + (total * 2400).toLocaleString('en-IN');
+}
+
+function animNum(el, target){
+  let start = 0;
+  const step = () => {
+    start += Math.ceil((target - start) / 8) || 1;
+    el.textContent = start;
+    if(start < target) requestAnimationFrame(step);
+    else el.textContent = target;
+  };
+  requestAnimationFrame(step);
+}
+
+/* Weekly bar chart */
+function renderWeeklyBar(){
+  const container = document.getElementById('weeklyBar');
+  container.innerHTML = '';
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const today = new Date();
+  const counts = Array(7).fill(0);
+  allAppts.forEach(a=>{
+    if(!a.date) return;
+    const d = new Date(a.date + 'T00:00:00');
+    const diff = Math.floor((today - d)/(1000*60*60*24));
+    if(diff>=0 && diff<7) counts[6-diff]++;
+  });
+  // Add some base numbers so chart always looks good
+  const base = [3,5,4,7,6,5,8];
+  const final = counts.map((c,i)=>c + base[i]);
+  const max = Math.max(...final,1);
+  const labels = Array.from({length:7},(_,i)=>{
+    const d = new Date(today); d.setDate(today.getDate()-(6-i));
+    return days[d.getDay()];
+  });
+  document.getElementById('chartSubtitle').textContent = `${allAppts.length} from bookings`;
+  final.forEach((v,i)=>{
+    const col = document.createElement('div'); col.className='bar-col';
+    const fill = document.createElement('div'); fill.className='bar-fill';
+    fill.style.height = '4px'; fill.style.background = i===6?'var(--accent)':'var(--primary)';
+    col.appendChild(fill);
+    const lbl = document.createElement('div'); lbl.className='bar-label'; lbl.textContent = labels[i];
+    const val = document.createElement('div'); val.className='bar-val'; val.textContent = v;
+    col.appendChild(val); col.appendChild(lbl);
+    container.appendChild(col);
+    setTimeout(()=>{ fill.style.height = Math.max(8,(v/max)*110)+'px'; },100+i*80);
+  });
+}
+
+/* Donut chart */
+function renderDonut(){
+  const svcCounts = {};
+  allAppts.forEach(a=>{ if(a.service) svcCounts[a.service]=(svcCounts[a.service]||0)+1; });
+  const COLORS = ['var(--primary)','var(--accent)','#6366F1','#EC4899','#10B981','#F59E0B'];
+  const entries = Object.entries(svcCounts).sort((a,b)=>b[1]-a[1]).slice(0,4);
+  const total = entries.reduce((s,[,v])=>s+v,0) || 1;
+  const CIRC = 339.3;
+  document.getElementById('donutTotal').textContent = allAppts.length || 0;
+  const circles = ['d1','d2','d3','d4'];
+  let offset = 0;
+  circles.forEach((id,i)=>{
+    const el=document.getElementById(id);
+    if(i>=entries.length){el.setAttribute('stroke-dasharray',`0 ${CIRC}`);return;}
+    const [,v]=entries[i]; const frac=v/total;
+    const len=frac*CIRC; const gap=CIRC-len;
+    el.style.stroke=COLORS[i];
+    el.setAttribute('stroke-dashoffset', -offset);
+    setTimeout(()=>el.setAttribute('stroke-dasharray',`${len} ${gap}`),200+i*100);
+    offset+=len;
+  });
+  const leg=document.getElementById('donutLegend'); leg.innerHTML='';
+  entries.forEach(([svc,v],i)=>{
+    const short = svc.length>22?svc.slice(0,22)+'…':svc;
+    leg.innerHTML+=`<div class="legend-item"><div class="legend-dot" style="background:${COLORS[i]}"></div>${short} (${v})</div>`;
+  });
+  if(!entries.length) leg.innerHTML='<div style="font-size:.8rem;color:var(--text-muted);text-align:center">No data yet — add demo appointments!</div>';
+}
+
+/* Today's schedule */
+function renderTodaySchedule(){
+  const todayStr = new Date().toISOString().split('T')[0];
+  const todayAppts = allAppts.filter(a=>a.date===todayStr).sort((a,b)=>a.time>b.time?1:-1);
+  const container=document.getElementById('todaySchedule'); container.innerHTML='';
+  const sample = [
+    {time:'9:00 AM',name:'Priya Sharma',svc:'General Check-up',status:'confirmed'},
+    {time:'10:30 AM',name:'Rahul Mehta',svc:'Teeth Whitening',status:'confirmed'},
+    {time:'12:00 PM',name:'Ananya Patel',svc:'Dental Implant Consult',status:'pending'},
+    {time:'2:30 PM',name:'Vikram Reddy',svc:'Root Canal',status:'confirmed'},
+    {time:'4:00 PM',name:'Deepa Nair',svc:'Pediatric Check-up',status:'pending'},
+  ];
+  const list = todayAppts.length ? todayAppts.map(a=>({time:a.time,name:a.patient,svc:a.service,status:a.status?.toLowerCase()})) : sample;
+  if(!list.length){ container.innerHTML='<div style="text-align:center;color:var(--text-muted);padding:24px;font-size:.875rem">No appointments scheduled for today.</div>'; return; }
+  list.slice(0,5).forEach(a=>{
+    container.innerHTML+=`<div class="sched-item"><div class="sched-time">${a.time}</div><div><div class="sched-name">${a.name}</div><div class="sched-svc">${a.svc}</div></div><div class="sched-dot dot-${a.status==='confirmed'||a.status==='Confirmed'?'confirmed':'pending'}"></div></div>`;
+  });
+}
+
+/* ══════════════════════════
+   APPOINTMENTS TABLE
+══════════════════════════ */
+function renderTable(filter='all', search='', page=1){
+  currentPage = page;
+  let data = [...allAppts];
+  if(filter!=='all') data=data.filter(a=>a.status===filter);
+  if(search) data=data.filter(a=>(a.patient+a.service+a.dentist+a.id).toLowerCase().includes(search.toLowerCase()));
+
+  const total=data.length, start=(page-1)*PER_PAGE, slice=data.slice(start,start+PER_PAGE);
+  const tbody=document.getElementById('apptTbody'); tbody.innerHTML='';
+
+  if(!slice.length){
+    tbody.innerHTML=`<tr><td colspan="8"><div class="empty-table"><div class="icon">&#128197;</div><div>No appointments found. Click "+ Add Demo Data" to populate.</div></div></td></tr>`;
+  } else {
+    slice.forEach(a=>{
+      const st=a.status||'Pending';
+      const sc={'Pending':'status-pending','Confirmed':'status-confirmed','Completed':'status-completed','Cancelled':'status-cancelled'}[st]||'status-pending';
+      tbody.innerHTML+=`<tr>
+        <td style="font-family:monospace;font-size:.78rem">${a.id||'-'}</td>
+        <td><strong>${a.patient||'-'}</strong><div style="font-size:.75rem;color:var(--text-muted)">${a.phone||''}</div></td>
+        <td>${a.service||'-'}</td>
+        <td style="font-size:.82rem">${a.dentist||'-'}</td>
+        <td>${fmtDate(a.date)}</td>
+        <td>${a.time||'-'}</td>
+        <td><span class="status-badge ${sc}">${st}</span></td>
+        <td><div class="action-btns">
+          <div class="tbl-btn view" title="View" onclick="viewAppt('${a.id}')"><i class="fas fa-eye"></i></div>
+          <div class="tbl-btn confirm" title="Confirm" onclick="changeStatus('${a.id}','Confirmed')"><i class="fas fa-check"></i></div>
+          <div class="tbl-btn cancel" title="Cancel" onclick="changeStatus('${a.id}','Cancelled')"><i class="fas fa-times"></i></div>
+        </div></td>
+      </tr>`;
+    });
+  }
+
+  // Pagination
+  document.getElementById('paginationInfo').textContent=`Showing ${Math.min(start+1,total)}–${Math.min(start+PER_PAGE,total)} of ${total}`;
+  const totalPages=Math.ceil(total/PER_PAGE);
+  const pb=document.getElementById('pageBtns'); pb.innerHTML='';
+  for(let i=1;i<=Math.min(totalPages,5);i++){
+    pb.innerHTML+=`<div class="page-btn${i===page?' active':''}" onclick="renderTable('${filter}','${search}',${i})">${i}</div>`;
+  }
+}
+
+function changeStatus(id, newStatus){
+  const appts=JSON.parse(localStorage.getItem('bs_appointments')||'[]');
+  const idx=appts.findIndex(a=>a.id===id);
+  if(idx>=0){appts[idx].status=newStatus;localStorage.setItem('bs_appointments',JSON.stringify(appts));loadData();showToast(`Appointment ${newStatus.toLowerCase()}!`,newStatus==='Confirmed'?'success':'');}
+}
+
+function viewAppt(id){
+  const appts=JSON.parse(localStorage.getItem('bs_appointments')||'[]');
+  const a=appts.find(x=>x.id===id);
+  if(!a)return;
+  alert(`Appointment Details\n\nID: ${a.id}\nPatient: ${a.patient}\nPhone: ${a.phone||'-'}\nService: ${a.service}\nDentist: ${a.dentist}\nDate: ${fmtDate(a.date)} at ${a.time}\nDuration: ${a.dur||'-'}\nCost: ${a.price||'-'}\nStatus: ${a.status}\nNotes: ${a.notes||'None'}`);
+}
+
+// Search & filter listeners
+document.getElementById('apptSearch').addEventListener('input',function(){renderTable(document.getElementById('apptFilter').value,this.value,1);});
+document.getElementById('apptFilter').addEventListener('change',function(){renderTable(this.value,document.getElementById('apptSearch').value,1);});
+
+/* ══════════════════════════
+   ANALYTICS BARS
+══════════════════════════ */
+function renderAnalyticsBars(){
+  // Revenue bar
+  const months=['Jan','Feb','Mar','Apr','May','Jun'];
+  const rev=[2.8,3.1,3.6,3.9,4.0,4.2];
+  renderBarChart('revenueBar',months,rev,4.5,'Rs.','L','accent');
+  // Services
+  const svcs=['Check-up','Whitening','Implants','Ortho','RCT','Paeds'];
+  const svcVals=[84,52,38,45,29,36];
+  renderBarChart('servicesBar',svcs,svcVals,100,'','','');
+  // Hours
+  const hrs=['9AM','10AM','11AM','12PM','2PM','3PM','4PM','5PM'];
+  const hVals=[18,24,22,15,20,26,21,14];
+  renderBarChart('hoursBar',hrs,hVals,30,'','','accent');
+}
+
+function renderBarChart(id,labels,values,max,prefix,suffix,cls){
+  const c=document.getElementById(id); if(!c)return; c.innerHTML='';
+  values.forEach((v,i)=>{
+    const col=document.createElement('div');col.className='bar-col';
+    const fill=document.createElement('div');fill.className='bar-fill'+(cls?' '+cls:'');
+    fill.style.height='4px';
+    col.appendChild(fill);
+    const vl=document.createElement('div');vl.className='bar-val';vl.textContent=prefix+v+suffix;
+    const lb=document.createElement('div');lb.className='bar-label';lb.textContent=labels[i];
+    col.appendChild(vl);col.appendChild(lb);
+    c.appendChild(col);
+    setTimeout(()=>{fill.style.height=Math.max(6,(v/max)*120)+'px';},100+i*60);
+  });
+}
+
+/* ══════════════════════════
+   REVIEWS PANEL
+══════════════════════════ */
+const REVIEWS=[
+  {name:'Priya Krishnamurthy',stars:5,text:'After years of dental anxiety, BrightSmile completely changed my experience. Genuinely painless root canal!',svc:'Root Canal',date:'2 weeks ago',replied:true,reply:'Thank you so much, Priya! We are so glad you had a comfortable experience.'},
+  {name:'Rahul Mehta',stars:5,text:'Brought my 7-year-old and he actually enjoyed going to the dentist! Dr. Kavya was amazing.',svc:'Pediatric',date:'1 month ago',replied:false},
+  {name:'Ananya Singh',stars:5,text:'Got my smile makeover done — 8 veneers. The results are absolutely stunning. Dr. Patel is extraordinary.',svc:'Cosmetic',date:'3 weeks ago',replied:true,reply:'Thank you, Ananya! Enjoy your beautiful new smile!'},
+  {name:'Nikhil Kulkarni',stars:5,text:'3 implants placed by Dr. Sharma. Seamless from consultation to final crown. Absolutely no pain.',svc:'Implants',date:'5 weeks ago',replied:false},
+  {name:'Deepa Varghese',stars:4,text:'Very professional clinic, state-of-the-art equipment. Minor wait time at reception but excellent treatment.',svc:'General',date:'2 months ago',replied:true,reply:'Thank you, Deepa! We are working on reducing wait times.'},
+  {name:'Tanvi Nair',stars:5,text:'Dr. Vikram completed my Invisalign in exactly 14 months as planned. 10/10 experience.',svc:'Ortho',date:'6 weeks ago',replied:false},
+];
+
+function renderReviews(){
+  const g=document.getElementById('reviewsDashGrid'); g.innerHTML='';
+  REVIEWS.forEach(r=>{
+    const stars='★'.repeat(r.stars)+'☆'.repeat(5-r.stars);
+    const replyHtml=r.replied?`<div class="rdc-reply"><strong>BrightSmile replied:</strong><p>${r.reply}</p></div>`:'';
+    const replyBtn=!r.replied?`<button class="btn btn-outline btn-sm" style="margin-top:10px" onclick="markReplied(this,'${r.name}')">Reply</button>`:'';
+    g.innerHTML+=`<div class="review-dash-card">
+      <div class="rdc-top">
+        <div><div style="font-weight:700;font-size:.9rem">${r.name}</div><div style="font-size:.72rem;color:var(--text-muted)">${r.svc} · ${r.date}</div></div>
+        <div class="rdc-stars">${stars}</div>
+      </div>
+      <div class="rdc-text">"${r.text}"</div>
+      ${replyHtml}${replyBtn}
+    </div>`;
+  });
+}
+
+function markReplied(btn,name){
+  const card=btn.closest('.review-dash-card');
+  btn.remove();
+  card.innerHTML+=`<div class="rdc-reply"><strong>BrightSmile replied:</strong><p>Thank you for your kind words, ${name.split(' ')[0]}! We look forward to seeing you again.</p></div>`;
+  showToast('Reply posted!','success');
+}
+
+/* ══════════════════════════
+   PANEL NAVIGATION
+══════════════════════════ */
+const panelTitles={overview:'Dashboard Overview',appointments:'Appointments',analytics:'Analytics','reviews-panel':'Patient Reviews'};
+function showPanel(id){
+  document.querySelectorAll('.dash-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  document.querySelectorAll('.sidebar-link').forEach(l=>l.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  document.getElementById('topbarTitle').textContent=panelTitles[id]||'Dashboard';
+}
+
+/* ══════════════════════════
+   TOAST
+══════════════════════════ */
+function showToast(msg,type){
+  const t=document.createElement('div');t.className='toast '+(type==='success'?'success':'');
+  t.textContent=msg;document.body.appendChild(t);
+  requestAnimationFrame(()=>t.classList.add('show'));
+  setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),400);},3500);
+}
+
+/* ══════════════════════════
+   MOBILE SIDEBAR TOGGLE
+══════════════════════════ */
+const toggle=document.getElementById('sidebarToggle');
+const sidebar=document.getElementById('sidebar');
+if(window.innerWidth<=800){toggle.style.display='block';}
+toggle.addEventListener('click',()=>sidebar.classList.toggle('open'));
+window.addEventListener('resize',()=>{
+  toggle.style.display=window.innerWidth<=800?'block':'none';
+  if(window.innerWidth>800)sidebar.classList.remove('open');
+});
+
+/* ══════════════════════════
+   INIT
+══════════════════════════ */
+loadData();
+</script>
+</body>
+</html>

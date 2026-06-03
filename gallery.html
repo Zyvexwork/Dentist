@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clinic Gallery — BrightSmile Dental Clinic</title>
+  <meta name="description" content="Take a virtual tour of BrightSmile Dental Clinic. See our modern facilities, treatment rooms, technology, and smile transformation results.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    /* Filter Tabs */
+    .gallery-filter {
+      display: flex; gap: 8px; flex-wrap: wrap;
+      justify-content: center; margin: 40px 0 48px;
+    }
+    .filter-btn {
+      padding: 10px 22px; border-radius: 99px;
+      border: 2px solid var(--border); background: var(--white);
+      font-size: 0.875rem; font-weight: 600; color: var(--text-mid);
+      cursor: pointer; transition: var(--transition);
+    }
+    .filter-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .filter-btn.active {
+      background: var(--primary); color: white; border-color: var(--primary);
+    }
+
+    /* Masonry-style Gallery Grid */
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .photo-item {
+      border-radius: var(--radius-md); overflow: hidden;
+      position: relative; cursor: zoom-in;
+      background: var(--sand);
+      transition: var(--transition);
+    }
+    .photo-item:hover { transform: scale(1.02); box-shadow: var(--shadow-md); }
+    .photo-item.tall { grid-row: span 2; }
+    .photo-item.wide { grid-column: span 2; }
+
+    .photo-placeholder {
+      width: 100%; height: 100%; min-height: 200px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 8px; padding: 16px; text-align: center;
+      background: var(--sand);
+    }
+    .photo-placeholder .ph-emoji { font-size: 3rem; }
+    .photo-placeholder .ph-label {
+      font-size: 0.8rem; font-weight: 600;
+      color: var(--text-mid); line-height: 1.3;
+    }
+
+    /* Colour-coded category backgrounds */
+    .photo-item[data-cat="clinic"] .photo-placeholder { background: linear-gradient(135deg, #E8F7F3, #C5EBE0); }
+    .photo-item[data-cat="team"] .photo-placeholder { background: linear-gradient(135deg, #FFF4E0, #FAD897); }
+    .photo-item[data-cat="tech"] .photo-placeholder { background: linear-gradient(135deg, #EBF4FF, #B5D4F4); }
+    .photo-item[data-cat="results"] .photo-placeholder { background: linear-gradient(135deg, #F0E8FE, #C9AEFA); }
+    .photo-item[data-cat="kids"] .photo-placeholder { background: linear-gradient(135deg, #FFF0F3, #F4C0D1); }
+
+    .photo-overlay {
+      position: absolute; inset: 0;
+      background: rgba(26,127,100,0);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 8px;
+      transition: var(--transition);
+    }
+    .photo-item:hover .photo-overlay { background: rgba(26,127,100,0.5); }
+    .photo-overlay-icon {
+      font-size: 2rem; color: white;
+      opacity: 0; transform: scale(0.7);
+      transition: var(--transition);
+    }
+    .photo-overlay-caption {
+      color: white; font-size: 0.85rem; font-weight: 600;
+      opacity: 0; transform: translateY(8px);
+      transition: var(--transition); text-align: center; padding: 0 16px;
+    }
+    .photo-item:hover .photo-overlay-icon,
+    .photo-item:hover .photo-overlay-caption {
+      opacity: 1; transform: scale(1) translateY(0);
+    }
+
+    /* Lightbox */
+    #lightbox {
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(0,0,0,0.93);
+      display: none; align-items: center; justify-content: center;
+      padding: 24px;
+    }
+    #lightbox.open { display: flex; animation: fadeIn 0.25s ease; }
+    .lb-inner {
+      background: var(--white); border-radius: var(--radius-lg);
+      overflow: hidden; max-width: 700px; width: 100%;
+      display: grid; grid-template-rows: auto 1fr;
+      box-shadow: var(--shadow-lg);
+    }
+    .lb-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 24px; border-bottom: 1px solid var(--border);
+    }
+    .lb-title { font-weight: 700; font-size: 1rem; }
+    .lb-close {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--cream); border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; color: var(--text-mid); transition: var(--transition);
+    }
+    .lb-close:hover { background: var(--danger); color: white; }
+    .lb-content {
+      aspect-ratio: 16/10; background: var(--sand);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 8rem;
+    }
+    .lb-footer {
+      padding: 16px 24px; border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .lb-caption { font-size: 0.875rem; color: var(--text-mid); }
+    .lb-nav { display: flex; gap: 8px; }
+    .lb-nav button {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--primary-pale); border: none; cursor: pointer;
+      color: var(--primary); transition: var(--transition);
+    }
+    .lb-nav button:hover { background: var(--primary); color: white; }
+
+    /* Before / After Section */
+    .ba-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px; margin-top: 48px;
+    }
+    .ba-card {
+      border-radius: var(--radius-md); overflow: hidden;
+      border: 1px solid var(--border); background: var(--white);
+    }
+    .ba-photos {
+      display: grid; grid-template-columns: 1fr 1fr;
+      height: 180px; position: relative;
+    }
+    .ba-photo {
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3.5rem;
+    }
+    .ba-photo.before { background: linear-gradient(135deg, #F5E8E8, #E8C0C0); }
+    .ba-photo.after  { background: linear-gradient(135deg, #E8F7F3, #C5EBE0); }
+    .ba-divider {
+      position: absolute; left: 50%; top: 0; bottom: 0;
+      width: 3px; background: white; transform: translateX(-50%);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .ba-divider-circle {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: white; border: 2px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 700; color: var(--text-mid);
+    }
+    .ba-labels {
+      display: grid; grid-template-columns: 1fr 1fr;
+      border-top: 1px solid var(--border);
+    }
+    .ba-label {
+      padding: 8px; text-align: center;
+      font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .ba-label.before { color: var(--danger); background: #FFF8F8; }
+    .ba-label.after  { color: var(--primary); background: var(--primary-pale); border-left: 1px solid var(--border); }
+    .ba-info { padding: 16px 20px; }
+    .ba-info h5 { margin-bottom: 4px; }
+    .ba-info p { font-size: 0.82rem; }
+
+    /* Virtual Tour CTA */
+    .tour-banner {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border-radius: var(--radius-lg); padding: 48px;
+      text-align: center; color: white; margin-top: 64px;
+    }
+    .tour-banner h2 { color: white; margin-bottom: 12px; }
+    .tour-banner p { color: rgba(255,255,255,0.8); max-width: 480px; margin: 0 auto 28px; }
+
+    @media (max-width: 768px) {
+      .photo-grid { grid-template-columns: 1fr 1fr; }
+      .photo-item.tall, .photo-item.wide { grid-row: span 1; grid-column: span 1; }
+    }
+    @media (max-width: 480px) {
+      .photo-grid { grid-template-columns: 1fr; }
+      .lb-inner { grid-template-rows: auto; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── NAVBAR ─── -->
+<nav class="navbar" id="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2C9.5 2 7.5 3.5 6.5 5.5C5.5 3.5 3 2 2 5C1 8 3 11 5 12.5C5 16 6 22 8 22C9 22 9.5 20.5 10 19C10.5 17.5 11 16 12 16C13 16 13.5 17.5 14 19C14.5 20.5 15 22 16 22C18 22 19 16 19 12.5C21 11 23 8 22 5C21 2 18.5 3.5 17.5 5.5C16.5 3.5 14.5 2 12 2Z"/></svg>
+      </div>
+      BrightSmile
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="services.html">Services</a></li>
+      <li><a href="about.html">About Us</a></li>
+      <li><a href="gallery.html" class="active">Gallery</a></li>
+      <li><a href="reviews.html">Reviews</a></li>
+      <li><a href="location.html">Location</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="nav-cta">
+      <span class="nav-phone"><i class="fas fa-phone"></i> +91 20 1234 5678</span>
+      <a href="appointment.html" class="btn btn-primary btn-sm">Book Appointment</a>
+    </div>
+    <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+<div class="mobile-nav" id="mobileNav">
+  <a href="index.html">🏠 Home</a>
+  <a href="services.html">🦷 Services</a>
+  <a href="about.html">👨‍⚕️ About Us</a>
+  <a href="gallery.html">🖼 Gallery</a>
+  <a href="reviews.html">⭐ Reviews</a>
+  <a href="location.html">📍 Location</a>
+  <a href="contact.html">✉️ Contact</a>
+  <a href="appointment.html" style="background:var(--primary);color:white;text-align:center;margin-top:8px;border-radius:var(--radius-sm);">📅 Book Appointment</a>
+</div>
+
+<!-- ─── PAGE HERO ─── -->
+<section class="page-hero">
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a>
+      <span>›</span>
+      <span>Gallery</span>
+    </div>
+    <div class="section-label" style="margin:0 auto 16px">Photo Gallery</div>
+    <h1>A Closer Look at<br><em style="color:var(--primary)">BrightSmile</em></h1>
+    <p class="lead" style="margin-top:12px;max-width:580px;margin-left:auto;margin-right:auto">
+      From our state-of-the-art treatment rooms to our warmly designed waiting area — see the space where thousands of smiles have been transformed.
+    </p>
+  </div>
+</section>
+
+<!-- ─── GALLERY SECTION ─── -->
+<section class="section">
+  <div class="container">
+
+    <!-- Filter Buttons -->
+    <div class="gallery-filter" id="filterBar">
+      <button class="filter-btn active" data-filter="all">🖼 All Photos</button>
+      <button class="filter-btn" data-filter="clinic">🏥 Clinic & Interiors</button>
+      <button class="filter-btn" data-filter="team">👨‍⚕️ Our Team</button>
+      <button class="filter-btn" data-filter="tech">🔬 Technology</button>
+      <button class="filter-btn" data-filter="results">✨ Smile Results</button>
+      <button class="filter-btn" data-filter="kids">👶 Kids Corner</button>
+    </div>
+
+    <!-- Photo Grid -->
+    <div class="photo-grid" id="photoGrid">
+
+      <!-- Clinic & Interiors -->
+      <div class="photo-item tall" data-cat="clinic" data-caption="Our welcoming reception and waiting area — designed to feel calm and comfortable from the moment you arrive.">
+        <div class="photo-placeholder">
+          <div class="ph-emoji">🏥</div>
+          <div class="ph-label">Reception & Waiting Area</div>
+        </div>
+        <div class="photo-overlay">
+          <div class="photo-overlay-icon"><i class="fas fa-search-plus"></i></div>
+          <div class="photo-overlay-caption">Reception & Waiting Area</div>
+        </div>
+      </div>
+
+      <div class="photo-item" data-cat="clinic" data-caption="Treatment Room 1 — fully equipped with a dental unit, intraoral camera, and overhead LED light.">
+        <div class="photo-placeholder">
+          <div class="ph-emoji">🪑</div>
+          <div class="ph-label">Treatment Room 1</div>
+        </div>
+        <div class="photo-overlay">
+          <div class="photo-overlay-icon"><i class="fas fa-search-plus"></i></div>
+          <div class="photo-overlay-caption">Treatment Room 1</div>
+        </div>
+      </div>
+
+      <div class="photo-item" data-cat="tech" data-caption="Our 3D CBCT scanner enables precise implant planning and complex diagnosis in a single scan.">
+        <div class="photo-placeholder">
+          <div class="ph-emoji">🔬</div>
+          <div class="ph-label">3D CBCT Scanner</div>
+        </div>
+        <div class="photo-overlay">
+          <div class="photo-overlay-icon"><i class="fas fa-search-plus"></i></div>
+          <div class="photo-overlay-caption">3D CBCT Scanner</div>
+        </div>
+      </div>
+
+      <div class="photo-item wide" data-cat="clinic" data-caption="Our bright, airy consultation lounge — where your treatment journey starts with a conversation.">
+        <div class="photo-placeholder" style="min-height:220px">
+          <div class="ph-emoji">🛋️</div>
+          <div class="ph-label">Consultation Lounge</div>
+        </div>
+        <div class="photo-overlay">
+          <div class="photo-overlay-icon"><i class="fas fa-search-plus"></i></div>
+          <div class="photo-overlay-caption">Consultation Lounge</div>
+        </div>
+      </div>
+
+      <div class="photo-item" data-cat="tech" data-caption="CAD/CAM milling unit for same-day ceramic crowns — no second visit, no temporary crown.">
+        <div class="photo-placeholder">
+          <div class="ph-emoji">⚙️</div>
+          <div class="ph-label">CAD/CAM Same-Day Crown Unit</div>
+        </div>
+        <div class="photo-overlay">
+          <div class="photo-overlay-icon"><i class="fas fa-search-plus"></i></div>
+          <div class="photo-overlay-caption">CAD/CAM Crown Unit</div>
+        </div>
+      </div>
+
+      <div class="photo-item" data-cat="team" data-caption="Dr. Arun Sharma consulting with a patient — thorough, honest, and always patient-first.">
+        <div class="photo-placeholder">
+          <div class="ph-emoji">👨‍⚕️</div>
+          <div class="ph-label">Dr. Sharma in Consultation</div>
+        </div>
+        <div class="photo-overlay">
+          <div class="photo-overlay-icon"><i class="fas fa-search-plus"></i></div>
+          <div class="photo-overlay-caption">Dr. Sharma in Consultation</div>
+        </div>
+      </div>
+
+      <div class="photo-item" data-cat="team" data-caption="Our specialist team — united by a passion for patient care and clinical excellence.">
+        <div class="photo-placeholder">
+          <div class="ph-emoji">👥</div>
+          <div class="ph-label">The BrightSmile Team</div>
+        </div>
+        <div class="photo-overlay">
+          <div class="photo-overlay-icon"><i class="fas fa-search-plus"></i></div>
+          <div class="photo-overlay-caption">The BrightSmile Team</div>
+        </div>
+      </div>
+
+      <div class="photo-item tall" data-cat="results" data-caption="A stunning full smile makeover — 8 porcelain veneers with professional whitening. 3-week treatment.">
+        <div class="photo-placeholder" style="background:linear-gradient(135deg,#F0E8FE,#C9AEFA)">
+          <div class="ph-emoji">😁</div>
+          <div class="ph-label">Full Smile Makeover — 8 Veneers</div>
+        </div>
+        <div class="photo-overlay">
+          <div class="photo-overlay-icon"><i class="fas fa-search-plus"></i></div>
+          <div class="photo-overlay-caption">Full Smile Makeover — 8 Veneers</div>
+        </div>
+      </div>
+
+      <div class="photo-item" data-cat="kids" data-caption="Our dedicated Kids Corner — colourful, playful, and designed to make children feel excited (not scared!) about dental visits.">
+        <div class="photo-placeholder">
+          <div class="ph-emoji">🎨</div>
+          <div class="ph-label">Kids Corner & Play Area</div>
+        </div>
+        <div class="photo-overlay">
+          <div class="photo-overlay-icon"><i class="fas fa-search-plus"></i></div>
+          <div class="photo-overlay-caption">Kids Corner</div>
+        </div>
+      </div>
+
+      <div class="photo-item" data-cat="clinic" data-caption="Our central sterilisation room — ISO-certified autoclave protocols for every instrument, every time.">
+        <div class="photo-placeholder">
+          <div class="ph-emoji">🧼</div>
+          <div class="ph-label">Sterilisation Centre</div>
+        </div>
+        <div class="photo-overlay">
+          <div class="photo-overlay-icon"><i class="fas fa-search-plus"></i></div>
+          <div class="photo-overlay-caption">Sterilisation Centre</div>
+        </div>
+      </div>
+
+      <div class="photo-item" data-cat="tech" data-caption="Digital smile design on our large consultation screen — see your new smile before any treatment begins.">
+        <div class="photo-placeholder">
+          <div class="ph-emoji">🖥️</div>
+          <div class="ph-label">Digital Smile Design Station</div>
+        </div>
+        <div class="photo-overlay">
+          <div class="photo-overlay-icon"><i class="fas fa-search-plus"></i></div>
+          <div class="photo-overlay-caption">Digital Smile Design</div>
+        </div>
+      </div>
+
+      <div class="photo-item" data-cat="results" data-caption="Invisalign treatment result — 14 months to a perfectly aligned smile, without a single metal bracket.">
+        <div class="photo-placeholder">
+          <div class="ph-emoji">😊</div>
+          <div class="ph-label">Invisalign Result — 14 Months</div>
+        </div>
+        <div class="photo-overlay">
+          <div class="photo-overlay-icon"><i class="fas fa-search-plus"></i></div>
+          <div class="photo-overlay-caption">Invisalign Result</div>
+        </div>
+      </div>
+
+      <div class="photo-item" data-cat="kids" data-caption="Dr. Kavya giving a little patient their well-deserved sticker after a brave check-up!">
+        <div class="photo-placeholder">
+          <div class="ph-emoji">⭐</div>
+          <div class="ph-label">Post-Visit Sticker Reward!</div>
+        </div>
+        <div class="photo-overlay">
+          <div class="photo-overlay-icon"><i class="fas fa-search-plus"></i></div>
+          <div class="photo-overlay-caption">Sticker Time!</div>
+        </div>
+      </div>
+
+      <div class="photo-item" data-cat="tech" data-caption="Intraoral scanner for digital impressions — no more uncomfortable trays, just a quick and accurate 3D scan.">
+        <div class="photo-placeholder">
+          <div class="ph-emoji">📡</div>
+          <div class="ph-label">Intraoral 3D Scanner</div>
+        </div>
+        <div class="photo-overlay">
+          <div class="photo-overlay-icon"><i class="fas fa-search-plus"></i></div>
+          <div class="photo-overlay-caption">Intraoral 3D Scanner</div>
+        </div>
+      </div>
+
+      <div class="photo-item wide" data-cat="team" data-caption="Dr. Meera Patel presenting a new smile design to a patient using our digital preview system.">
+        <div class="photo-placeholder" style="min-height:180px;background:linear-gradient(135deg,#FFF4E0,#FAD897)">
+          <div class="ph-emoji">💬</div>
+          <div class="ph-label">Smile Design Consultation with Dr. Patel</div>
+        </div>
+        <div class="photo-overlay">
+          <div class="photo-overlay-icon"><i class="fas fa-search-plus"></i></div>
+          <div class="photo-overlay-caption">Smile Design Consultation</div>
+        </div>
+      </div>
+
+      <div class="photo-item" data-cat="results" data-caption="Single dental implant result — natural-looking, permanent, and indistinguishable from the surrounding teeth.">
+        <div class="photo-placeholder">
+          <div class="ph-emoji">👑</div>
+          <div class="ph-label">Single Implant Result</div>
+        </div>
+        <div class="photo-overlay">
+          <div class="photo-overlay-icon"><i class="fas fa-search-plus"></i></div>
+          <div class="photo-overlay-caption">Single Implant Result</div>
+        </div>
+      </div>
+
+      <div class="photo-item" data-cat="clinic" data-caption="Panoramic window view from Treatment Room 3 — because a calming view helps every patient relax.">
+        <div class="photo-placeholder">
+          <div class="ph-emoji">🌿</div>
+          <div class="ph-label">Treatment Room 3 — Garden View</div>
+        </div>
+        <div class="photo-overlay">
+          <div class="photo-overlay-icon"><i class="fas fa-search-plus"></i></div>
+          <div class="photo-overlay-caption">Treatment Room 3</div>
+        </div>
+      </div>
+
+      <div class="photo-item" data-cat="results" data-caption="Teeth whitening result — 7 shades brighter in a single 90-minute in-chair session.">
+        <div class="photo-placeholder">
+          <div class="ph-emoji">✨</div>
+          <div class="ph-label">Whitening — 7 Shades Brighter</div>
+        </div>
+        <div class="photo-overlay">
+          <div class="photo-overlay-icon"><i class="fas fa-search-plus"></i></div>
+          <div class="photo-overlay-caption">Whitening Result</div>
+        </div>
+      </div>
+
+    </div><!-- /photo-grid -->
+  </div>
+</section>
+
+<!-- ─── BEFORE & AFTER ─── -->
+<section class="section" style="background:var(--cream)">
+  <div class="container">
+    <div style="text-align:center;max-width:540px;margin:0 auto">
+      <div class="section-label">Smile Transformations</div>
+      <h2>Real Patients,<br>Real Results</h2>
+      <p style="margin-top:12px">Every smile below belongs to a real BrightSmile patient who said yes to a better, healthier, more confident smile. With permission, we share their journeys to inspire yours.</p>
+    </div>
+    <div class="ba-grid">
+      <div class="ba-card" data-animate>
+        <div class="ba-photos">
+          <div class="ba-photo before">😬</div>
+          <div class="ba-photo after">😁</div>
+          <div class="ba-divider"><div class="ba-divider-circle">↔</div></div>
+        </div>
+        <div class="ba-labels">
+          <div class="ba-label before">Before</div>
+          <div class="ba-label after">After</div>
+        </div>
+        <div class="ba-info">
+          <h5>Full Smile Makeover — 8 Porcelain Veneers</h5>
+          <p>Discoloured, misaligned teeth transformed with custom veneers. Treatment time: 3 weeks.</p>
+        </div>
+      </div>
+      <div class="ba-card" data-animate data-delay="100">
+        <div class="ba-photos">
+          <div class="ba-photo before">😶</div>
+          <div class="ba-photo after">😄</div>
+          <div class="ba-divider"><div class="ba-divider-circle">↔</div></div>
+        </div>
+        <div class="ba-labels">
+          <div class="ba-label before">Before</div>
+          <div class="ba-label after">After</div>
+        </div>
+        <div class="ba-info">
+          <h5>Invisalign Clear Aligner Treatment</h5>
+          <p>Crowded lower and upper teeth corrected invisibly over 14 months.</p>
+        </div>
+      </div>
+      <div class="ba-card" data-animate data-delay="200">
+        <div class="ba-photos">
+          <div class="ba-photo before">🙁</div>
+          <div class="ba-photo after">🙂</div>
+          <div class="ba-divider"><div class="ba-divider-circle">↔</div></div>
+        </div>
+        <div class="ba-labels">
+          <div class="ba-label before">Before</div>
+          <div class="ba-label after">After</div>
+        </div>
+        <div class="ba-info">
+          <h5>Single Tooth Implant</h5>
+          <p>Missing upper incisor replaced with a titanium implant and zirconia crown. Natural, permanent result.</p>
+        </div>
+      </div>
+      <div class="ba-card" data-animate data-delay="300">
+        <div class="ba-photos">
+          <div class="ba-photo before">😐</div>
+          <div class="ba-photo after">😀</div>
+          <div class="ba-divider"><div class="ba-divider-circle">↔</div></div>
+        </div>
+        <div class="ba-labels">
+          <div class="ba-label before">Before</div>
+          <div class="ba-label after">After</div>
+        </div>
+        <div class="ba-info">
+          <h5>Professional Teeth Whitening</h5>
+          <p>7 shades brighter in a single 90-minute in-chair Zoom whitening session.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── TOUR BANNER ─── -->
+<section class="section-sm">
+  <div class="container">
+    <div class="tour-banner" data-animate>
+      <div style="font-size:3rem;margin-bottom:16px">🎥</div>
+      <h2>Take a Virtual Tour</h2>
+      <p>Can't visit us in person yet? Watch our clinic walkthrough video and meet our team before you even step through the door.</p>
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+        <a href="#" class="btn btn-white btn-lg" onclick="showToastMsg()">
+          <i class="fas fa-play-circle"></i> Watch Video Tour
+        </a>
+        <a href="appointment.html" class="btn btn-outline btn-lg" style="border-color:rgba(255,255,255,0.4);color:white">
+          Book In-Person Visit
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── LIGHTBOX MODAL ─── -->
+<div id="lightbox">
+  <div class="lb-inner" id="lbInner">
+    <div class="lb-header">
+      <div class="lb-title" id="lbTitle">Clinic Photo</div>
+      <button class="lb-close" id="lbClose">✕</button>
+    </div>
+    <div class="lb-content" id="lbContent">🏥</div>
+    <div class="lb-footer">
+      <div class="lb-caption" id="lbCaption"></div>
+      <div class="lb-nav">
+        <button id="lbPrev" title="Previous"><i class="fas fa-chevron-left"></i></button>
+        <button id="lbNext" title="Next"><i class="fas fa-chevron-right"></i></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="logo">
+          <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M12 2C9.5 2 7.5 3.5 6.5 5.5C5.5 3.5 3 2 2 5C1 8 3 11 5 12.5C5 16 6 22 8 22C9 22 9.5 20.5 10 19C10.5 17.5 11 16 12 16C13 16 13.5 17.5 14 19C14.5 20.5 15 22 16 22C18 22 19 16 19 12.5C21 11 23 8 22 5C21 2 18.5 3.5 17.5 5.5C16.5 3.5 14.5 2 12 2Z"/></svg></div>
+          BrightSmile
+        </a>
+        <p>Creating healthy, beautiful smiles for families across Pune since 2009.</p>
+        <div class="social-links" style="margin-top:20px">
+          <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="social-link"><i class="fab fa-whatsapp"></i></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>Gallery</h5>
+        <ul class="footer-links">
+          <li><a href="#" data-filter-link="clinic">Clinic & Interiors</a></li>
+          <li><a href="#" data-filter-link="team">Our Team</a></li>
+          <li><a href="#" data-filter-link="tech">Technology</a></li>
+          <li><a href="#" data-filter-link="results">Smile Results</a></li>
+          <li><a href="#" data-filter-link="kids">Kids Corner</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Quick Links</h5>
+        <ul class="footer-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="reviews.html">Reviews</a></li>
+          <li><a href="appointment.html">Book Appointment</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Contact</h5>
+        <div class="footer-contact">
+          <div class="footer-contact-item"><span class="footer-contact-icon"><i class="fas fa-phone"></i></span><span>+91 20 1234 5678</span></div>
+          <div class="footer-contact-item"><span class="footer-contact-icon"><i class="fas fa-envelope"></i></span><span>hello@brightsmile.in</span></div>
+          <div class="footer-contact-item"><span class="footer-contact-icon"><i class="fas fa-clock"></i></span><span>Mon–Sat: 9 AM – 8 PM</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 BrightSmile Dental Clinic. All rights reserved.</p>
+      <p>🦷 Made with care for your smile</p>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script>
+// ─── GALLERY FILTER ───
+const allItems = document.querySelectorAll('.photo-item');
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const filter = this.dataset.filter;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    allItems.forEach(item => {
+      const show = filter === 'all' || item.dataset.cat === filter;
+      item.style.display = show ? '' : 'none';
+    });
+  });
+});
+
+// Footer filter links
+document.querySelectorAll('[data-filter-link]').forEach(a => {
+  a.addEventListener('click', (e) => {
+    e.preventDefault();
+    const f = a.dataset.filterLink;
+    document.querySelector(`[data-filter="${f}"]`)?.click();
+    document.getElementById('photoGrid').scrollIntoView({ behavior: 'smooth' });
+  });
+});
+
+// ─── LIGHTBOX ───
+const lb = document.getElementById('lightbox');
+const lbContent = document.getElementById('lbContent');
+const lbCaption = document.getElementById('lbCaption');
+const lbTitle = document.getElementById('lbTitle');
+let currentIdx = 0;
+let visibleItems = [];
+
+function openLightbox(idx) {
+  visibleItems = [...document.querySelectorAll('.photo-item:not([style*="display: none"])')];
+  currentIdx = idx;
+  showLbItem(currentIdx);
+  lb.classList.add('open');
+}
+function showLbItem(i) {
+  const item = visibleItems[i];
+  const emoji = item.querySelector('.ph-emoji')?.textContent || '🏥';
+  const label = item.querySelector('.ph-label')?.textContent || '';
+  const caption = item.dataset.caption || label;
+  lbContent.textContent = emoji;
+  lbCaption.textContent = caption;
+  lbTitle.textContent = label;
+}
+function closeLb() { lb.classList.remove('open'); }
+
+allItems.forEach((item, i) => {
+  item.addEventListener('click', () => {
+    const vis = [...document.querySelectorAll('.photo-item:not([style*="display: none"])')];
+    openLightbox(vis.indexOf(item));
+  });
+});
+document.getElementById('lbClose').addEventListener('click', closeLb);
+lb.addEventListener('click', (e) => { if (e.target === lb) closeLb(); });
+document.getElementById('lbPrev').addEventListener('click', () => {
+  currentIdx = (currentIdx - 1 + visibleItems.length) % visibleItems.length;
+  showLbItem(currentIdx);
+});
+document.getElementById('lbNext').addEventListener('click', () => {
+  currentIdx = (currentIdx + 1) % visibleItems.length;
+  showLbItem(currentIdx);
+});
+document.addEventListener('keydown', (e) => {
+  if (!lb.classList.contains('open')) return;
+  if (e.key === 'Escape') closeLb();
+  if (e.key === 'ArrowLeft') document.getElementById('lbPrev').click();
+  if (e.key === 'ArrowRight') document.getElementById('lbNext').click();
+});
+
+function showToastMsg() {
+  const t = document.createElement('div');
+  t.className = 'toast success show';
+  t.textContent = '🎥 Video tour coming soon! Follow us on Instagram for clinic reels.';
+  document.body.appendChild(t);
+  setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 4000);
+}
+</script>
+</body>
+</html>

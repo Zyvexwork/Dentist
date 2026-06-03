@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Appointment — BrightSmile Dental Clinic</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .stepper-wrap{background:var(--white);border-bottom:1px solid var(--border);padding:20px 0;position:sticky;top:var(--nav-height);z-index:100}
+    .stepper{display:flex;align-items:center;justify-content:center;max-width:700px;margin:0 auto;padding:0 24px}
+    .step-item{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;position:relative;cursor:pointer}
+    .step-item:not(:last-child)::after{content:'';position:absolute;top:17px;left:calc(50% + 20px);right:calc(-50% + 20px);height:2px;background:var(--border);transition:background .4s}
+    .step-item.done:not(:last-child)::after{background:var(--primary)}
+    .step-circle{width:34px;height:34px;border-radius:50%;border:2px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:700;color:var(--text-muted);transition:all .3s;z-index:1;position:relative}
+    .step-item.active .step-circle{border-color:var(--primary);background:var(--primary);color:white;box-shadow:0 0 0 4px var(--primary-pale)}
+    .step-item.done .step-circle{border-color:var(--primary);background:var(--primary);color:white}
+    .step-label{font-size:.7rem;font-weight:600;color:var(--text-muted);text-align:center;white-space:nowrap;transition:color .3s}
+    .step-item.active .step-label,.step-item.done .step-label{color:var(--primary)}
+    .appt-layout{display:grid;grid-template-columns:1fr 290px;gap:28px;max-width:1060px;margin:0 auto;padding:44px 24px 80px}
+    .step-panel{display:none;animation:fadeUp .4s ease}
+    .step-panel.active{display:block}
+    .step-header{margin-bottom:28px}
+    .step-header h2{margin-bottom:6px}
+    .svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .svc-card{border:2px solid var(--border);border-radius:var(--radius-md);padding:20px 16px;cursor:pointer;transition:var(--transition);text-align:center;background:var(--white);position:relative;overflow:hidden}
+    .svc-card:hover{border-color:var(--primary);box-shadow:var(--shadow-sm)}
+    .svc-card.selected{border-color:var(--primary);background:var(--primary-pale);box-shadow:0 0 0 3px rgba(26,127,100,.12)}
+    .svc-card.selected::after{content:'✓';position:absolute;top:8px;right:10px;width:20px;height:20px;border-radius:50%;background:var(--primary);color:white;font-size:.7rem;display:grid;place-items:center}
+    .svc-emoji{font-size:1.8rem;margin-bottom:8px;display:block}
+    .svc-name{font-weight:700;font-size:.875rem;color:var(--text-dark);margin-bottom:3px}
+    .svc-desc{font-size:.74rem;color:var(--text-muted);line-height:1.4}
+    .svc-price{font-size:.74rem;color:var(--primary);font-weight:700;margin-top:6px}
+    .dentist-grid{display:flex;flex-direction:column;gap:12px}
+    .dentist-card{border:2px solid var(--border);border-radius:var(--radius-md);padding:16px 18px;cursor:pointer;transition:var(--transition);background:var(--white);display:flex;align-items:center;gap:14px;position:relative}
+    .dentist-card:hover{border-color:var(--primary);box-shadow:var(--shadow-sm)}
+    .dentist-card.selected{border-color:var(--primary);background:var(--primary-pale)}
+    .dentist-card.selected::after{content:'✓';position:absolute;top:12px;right:14px;width:22px;height:22px;border-radius:50%;background:var(--primary);color:white;font-size:.75rem;display:grid;place-items:center}
+    .dentist-av{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0}
+    .dentist-name{font-weight:700;margin-bottom:2px;font-size:.9rem}
+    .dentist-spec{font-size:.78rem;color:var(--primary);font-weight:600;margin-bottom:3px}
+    .dentist-meta{font-size:.74rem;color:var(--text-muted)}
+    .dtag{background:var(--primary-pale);color:var(--primary);padding:2px 7px;border-radius:99px;font-size:.68rem;font-weight:700;margin-left:6px}
+    .cal-wrap{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+    .mini-cal{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden}
+    .cal-hd{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;background:var(--primary);color:white;font-weight:700;font-size:.9rem}
+    .cal-nav{background:rgba(255,255,255,.15);border:none;color:white;width:26px;height:26px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.85rem;transition:var(--transition)}
+    .cal-nav:hover{background:rgba(255,255,255,.3)}
+    .cal-body{padding:10px}
+    .cal-dow{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;margin-bottom:4px}
+    .cal-dow span{font-size:.66rem;font-weight:700;color:var(--text-muted);padding:3px 0}
+    .cal-days{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+    .cd{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:.8rem;border-radius:50%;cursor:pointer;transition:var(--transition);color:var(--text-dark);position:relative}
+    .cd:hover:not(.dis):not(.emp){background:var(--primary-pale);color:var(--primary)}
+    .cd.sel{background:var(--primary);color:white;font-weight:700}
+    .cd.tod{font-weight:700;color:var(--primary)}
+    .cd.dis{color:var(--text-muted);opacity:.35;cursor:not-allowed}
+    .cd.emp{cursor:default}
+    .cd.has::after{content:'';display:block;width:4px;height:4px;border-radius:50%;background:var(--accent);position:absolute;bottom:3px}
+    .slots-side h4{margin-bottom:14px;font-size:1rem}
+    .period-lbl{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:6px}
+    .slot-grp{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:16px}
+    .ts{padding:9px 4px;border:1.5px solid var(--border);border-radius:var(--radius-sm);text-align:center;cursor:pointer;font-size:.78rem;font-weight:600;color:var(--text-mid);background:var(--white);transition:var(--transition)}
+    .ts:hover{border-color:var(--primary);color:var(--primary)}
+    .ts.sel{background:var(--primary);color:white;border-color:var(--primary)}
+    .ts.bkd{background:var(--cream);color:var(--text-muted);cursor:not-allowed;text-decoration:line-through;opacity:.6}
+    .no-date{text-align:center;padding:28px 12px;color:var(--text-muted);font-size:.875rem}
+    .det-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 20px}
+    .full{grid-column:span 2}
+    .radio-grp{display:flex;gap:12px;flex-wrap:wrap;margin-top:4px}
+    .radio-opt{display:flex;align-items:center;gap:6px;cursor:pointer;font-size:.85rem;color:var(--text-mid)}
+    .radio-opt input{accent-color:var(--primary)}
+    .ins-check{background:var(--primary-pale);border-radius:var(--radius-sm);padding:12px;display:flex;align-items:flex-start;gap:8px;margin-top:6px}
+    .ins-check input{margin-top:3px;accent-color:var(--primary)}
+    .ins-check label{font-size:.85rem;color:var(--text-mid)}
+    .confirm-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+    .cf-hd{background:var(--primary);padding:24px 28px;color:white;display:flex;align-items:center;gap:14px}
+    .cf-hd-ico{width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0}
+    .cf-hd h3{color:white;margin-bottom:3px}
+    .cf-hd p{color:rgba(255,255,255,.8);font-size:.82rem;margin:0}
+    .cf-body{padding:28px}
+    .cf-rows{display:flex;flex-direction:column;gap:0;margin-bottom:20px}
+    .cf-row{display:flex;align-items:flex-start;gap:10px;padding:12px 0;border-bottom:1px solid var(--border)}
+    .cf-row:last-child{border-bottom:none}
+    .cf-ico{width:32px;height:32px;border-radius:9px;background:var(--primary-pale);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0}
+    .cf-lbl{font-size:.72rem;color:var(--text-muted);margin-bottom:2px}
+    .cf-val{font-weight:700;color:var(--text-dark);font-size:.9rem}
+    .success-screen{display:none;text-align:center;padding:48px 24px}
+    .success-screen.show{display:block;animation:scaleIn .5s ease}
+    .suc-ico{width:72px;height:72px;border-radius:50%;background:var(--primary);color:white;font-size:2rem;margin:0 auto 18px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(26,127,100,.3)}
+    .bk-id{display:inline-block;background:var(--primary-pale);color:var(--primary);font-family:monospace;font-size:1.1rem;font-weight:700;padding:8px 20px;border-radius:var(--radius-sm);margin:14px 0;letter-spacing:.1em}
+    .step-nav{display:flex;align-items:center;justify-content:space-between;margin-top:32px;padding-top:22px;border-top:1px solid var(--border)}
+    .sum-sidebar{position:sticky;top:calc(var(--nav-height) + 90px);background:var(--white);border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden}
+    .sum-hd{background:var(--primary-pale);padding:13px 16px;font-weight:700;color:var(--primary);font-size:.875rem;border-bottom:1px solid var(--border)}
+    .sum-body{padding:16px}
+    .sum-row{display:flex;flex-direction:column;margin-bottom:12px}
+    .sum-lbl{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin-bottom:2px}
+    .sum-val{font-size:.85rem;font-weight:600;color:var(--text-dark)}
+    .sum-val.emp{color:var(--text-muted);font-weight:400;font-style:italic}
+    .sum-div{border:none;border-top:1px solid var(--border);margin:10px 0}
+    @media(max-width:900px){.appt-layout{grid-template-columns:1fr}.sum-sidebar{position:static}.svc-grid{grid-template-columns:repeat(2,1fr)}.cal-wrap{grid-template-columns:1fr}}
+    @media(max-width:480px){.svc-grid{grid-template-columns:1fr 1fr}.det-grid{grid-template-columns:1fr}.full{grid-column:span 1}.stepper .step-label{display:none}.slot-grp{grid-template-columns:repeat(2,1fr)}}
+  </style>
+</head>
+<body>
+<nav class="navbar" id="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="logo">
+      <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M12 2C9.5 2 7.5 3.5 6.5 5.5C5.5 3.5 3 2 2 5C1 8 3 11 5 12.5C5 16 6 22 8 22C9 22 9.5 20.5 10 19C10.5 17.5 11 16 12 16C13 16 13.5 17.5 14 19C14.5 20.5 15 22 16 22C18 22 19 16 19 12.5C21 11 23 8 22 5C21 2 18.5 3.5 17.5 5.5C16.5 3.5 14.5 2 12 2Z"/></svg></div>
+      BrightSmile
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li><li><a href="services.html">Services</a></li>
+      <li><a href="about.html">About Us</a></li><li><a href="gallery.html">Gallery</a></li>
+      <li><a href="reviews.html">Reviews</a></li><li><a href="location.html">Location</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="nav-cta">
+      <span class="nav-phone"><i class="fas fa-phone"></i> +91 20 1234 5678</span>
+      <a href="appointment.html" class="btn btn-primary btn-sm">Book Appointment</a>
+    </div>
+    <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+<div class="mobile-nav" id="mobileNav">
+  <a href="index.html">&#127968; Home</a><a href="services.html">&#129463; Services</a>
+  <a href="about.html">&#128104;&#8205;&#9877; About Us</a><a href="gallery.html">&#128444; Gallery</a>
+  <a href="reviews.html">&#11088; Reviews</a><a href="location.html">&#128205; Location</a>
+  <a href="contact.html">&#9993; Contact</a>
+  <a href="appointment.html" style="background:var(--primary);color:white;text-align:center;margin-top:8px;border-radius:var(--radius-sm);">&#128197; Book Appointment</a>
+</div>
+
+<section class="page-hero" style="padding-bottom:36px">
+  <div class="container">
+    <div class="breadcrumb"><a href="index.html">Home</a><span>&#8250;</span><span>Book Appointment</span></div>
+    <div class="section-label" style="margin:0 auto 14px">Online Booking</div>
+    <h1>Book in <em style="color:var(--primary)">Under 2 Minutes</em></h1>
+    <p class="lead" style="margin-top:10px;max-width:480px;margin-left:auto;margin-right:auto">Choose your service, pick your dentist, select a time slot, and you are done. We confirm within 2 hours.</p>
+  </div>
+</section>
+
+<div class="stepper-wrap">
+  <div class="stepper" id="stepper">
+    <div class="step-item active" data-step="1"><div class="step-circle" id="sc1">1</div><div class="step-label">Service</div></div>
+    <div class="step-item" data-step="2"><div class="step-circle" id="sc2">2</div><div class="step-label">Dentist</div></div>
+    <div class="step-item" data-step="3"><div class="step-circle" id="sc3">3</div><div class="step-label">Date &amp; Time</div></div>
+    <div class="step-item" data-step="4"><div class="step-circle" id="sc4">4</div><div class="step-label">Details</div></div>
+    <div class="step-item" data-step="5"><div class="step-circle" id="sc5">5</div><div class="step-label">Confirm</div></div>
+  </div>
+</div>
+
+<div class="appt-layout">
+  <div id="stepContent">
+
+    <!-- STEP 1 -->
+    <div class="step-panel active" id="step1">
+      <div class="step-header"><h2>What brings you in today?</h2><p>Select the service you need. Not sure? Choose General Check-up and our dentist will guide you.</p></div>
+      <div class="svc-grid">
+        <div class="svc-card" data-svc="General Check-up &amp; Cleaning" data-price="From Rs.500" data-dur="45 min"><span class="svc-emoji">&#129463;</span><div class="svc-name">General Check-up</div><div class="svc-desc">Exam, X-ray and professional cleaning</div><div class="svc-price">From Rs.500</div></div>
+        <div class="svc-card" data-svc="Teeth Whitening" data-price="Rs.4,000" data-dur="90 min"><span class="svc-emoji">&#10024;</span><div class="svc-name">Teeth Whitening</div><div class="svc-desc">In-chair laser whitening, 7 shades brighter</div><div class="svc-price">Rs.4,000</div></div>
+        <div class="svc-card" data-svc="Dental Implant Consultation" data-price="Free" data-dur="30 min"><span class="svc-emoji">&#128081;</span><div class="svc-name">Dental Implants</div><div class="svc-desc">Free implant consultation and 3D assessment</div><div class="svc-price">Free Consult</div></div>
+        <div class="svc-card" data-svc="Orthodontic Consultation" data-price="Free" data-dur="30 min"><span class="svc-emoji">&#128552;</span><div class="svc-name">Orthodontics</div><div class="svc-desc">Braces and clear aligners consultation</div><div class="svc-price">Free Consult</div></div>
+        <div class="svc-card" data-svc="Root Canal Treatment" data-price="From Rs.4,000" data-dur="60-90 min"><span class="svc-emoji">&#128300;</span><div class="svc-name">Root Canal</div><div class="svc-desc">Single-visit painless RCT with rotary endo</div><div class="svc-price">From Rs.4,000</div></div>
+        <div class="svc-card" data-svc="Pediatric Dentistry" data-price="From Rs.400" data-dur="30 min"><span class="svc-emoji">&#128118;</span><div class="svc-name">Pediatric Dental</div><div class="svc-desc">Kid-friendly check-up and cleaning</div><div class="svc-price">From Rs.400</div></div>
+        <div class="svc-card" data-svc="Smile Makeover / Veneers" data-price="Rs.12,000/tooth" data-dur="60 min"><span class="svc-emoji">&#128513;</span><div class="svc-name">Smile Makeover</div><div class="svc-desc">Veneers, bonding and full smile design</div><div class="svc-price">Rs.12,000/tooth</div></div>
+        <div class="svc-card" data-svc="Gum Treatment" data-price="From Rs.3,000" data-dur="60 min"><span class="svc-emoji">&#127807;</span><div class="svc-name">Gum Treatment</div><div class="svc-desc">Deep cleaning and periodontal therapy</div><div class="svc-price">From Rs.3,000</div></div>
+        <div class="svc-card" data-svc="Emergency Dental" data-price="From Rs.500" data-dur="30-60 min"><span class="svc-emoji">&#128680;</span><div class="svc-name">Emergency Dental</div><div class="svc-desc">Same-day urgent care, pain relief first</div><div class="svc-price">From Rs.500</div></div>
+      </div>
+      <div class="step-nav"><div></div><button class="btn btn-primary" onclick="goStep(2)" id="svcNextBtn" disabled>Next: Choose Dentist <i class="fas fa-arrow-right"></i></button></div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step-panel" id="step2">
+      <div class="step-header"><h2>Choose your dentist</h2><p>Select a specialist or choose No Preference and we will match you with the best available.</p></div>
+      <div class="dentist-grid">
+        <div class="dentist-card" data-dentist="No Preference" data-spec="Best Available"><div class="dentist-av" style="background:var(--cream)">&#127922;</div><div><div class="dentist-name">No Preference <span class="dtag">Recommended</span></div><div class="dentist-spec">Best Available Specialist</div><div class="dentist-meta">We match you with the ideal dentist for your treatment</div></div></div>
+        <div class="dentist-card" data-dentist="Dr. Arun Sharma" data-spec="Prosthodontics &amp; Implantology"><div class="dentist-av" style="background:var(--primary-pale)">&#128104;&#8205;&#9877;</div><div><div class="dentist-name">Dr. Arun Sharma</div><div class="dentist-spec">Prosthodontics &amp; Implantology</div><div class="dentist-meta">20+ yrs exp &middot; Founder &amp; Director &middot; MDS, ICOI Fellow</div></div></div>
+        <div class="dentist-card" data-dentist="Dr. Meera Patel" data-spec="Cosmetic Dentistry"><div class="dentist-av" style="background:#FFF4E0">&#128105;&#8205;&#9877;</div><div><div class="dentist-name">Dr. Meera Patel</div><div class="dentist-spec">Cosmetic &amp; Aesthetic Dentistry</div><div class="dentist-meta">600+ smile makeovers &middot; Digital Smile Design specialist</div></div></div>
+        <div class="dentist-card" data-dentist="Dr. Vikram Nair" data-spec="Orthodontics"><div class="dentist-av" style="background:#EBF4FF">&#129489;&#8205;&#9877;</div><div><div class="dentist-name">Dr. Vikram Nair</div><div class="dentist-spec">Orthodontics &amp; Clear Aligners</div><div class="dentist-meta">Invisalign Diamond Provider &middot; 900+ cases</div></div></div>
+        <div class="dentist-card" data-dentist="Dr. Kavya Menon" data-spec="Pediatric Dentistry"><div class="dentist-av" style="background:#FFF0F3">&#128105;&#8205;&#9877;</div><div><div class="dentist-name">Dr. Kavya Menon</div><div class="dentist-spec">Pediatric &amp; Preventive Dentistry</div><div class="dentist-meta">Specialist for children &middot; Gentle and fun approach</div></div></div>
+        <div class="dentist-card" data-dentist="Dr. Anita Reddy" data-spec="Endodontics"><div class="dentist-av" style="background:#FAECE7">&#128105;&#8205;&#9877;</div><div><div class="dentist-name">Dr. Anita Reddy</div><div class="dentist-spec">Endodontics &amp; Root Canal</div><div class="dentist-meta">3,000+ painless RCTs &middot; Rotary endodontics expert</div></div></div>
+      </div>
+      <div class="step-nav"><button class="btn btn-outline" onclick="goStep(1)"><i class="fas fa-arrow-left"></i> Back</button><button class="btn btn-primary" onclick="goStep(3)" id="dentNextBtn" disabled>Next: Date &amp; Time <i class="fas fa-arrow-right"></i></button></div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step-panel" id="step3">
+      <div class="step-header"><h2>Pick a date &amp; time</h2><p>Available slots are shown below. Greyed-out dates are fully booked or closed.</p></div>
+      <div class="cal-wrap">
+        <div>
+          <div class="mini-cal">
+            <div class="cal-hd"><button class="cal-nav" id="calPrev"><i class="fas fa-chevron-left"></i></button><span id="calLbl"></span><button class="cal-nav" id="calNext"><i class="fas fa-chevron-right"></i></button></div>
+            <div class="cal-body"><div class="cal-dow"><span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span></div><div class="cal-days" id="calDays"></div></div>
+          </div>
+          <p style="font-size:.75rem;color:var(--text-muted);margin-top:8px;text-align:center"><span style="display:inline-block;width:7px;height:7px;background:var(--accent);border-radius:50%;margin-right:4px;vertical-align:middle"></span>Dot = available slots</p>
+        </div>
+        <div class="slots-side">
+          <h4 id="slotTitle">Select a date to view times</h4>
+          <div id="slotsWrap"><div class="no-date"><div style="font-size:2rem;margin-bottom:8px">&#128197;</div>Please pick a date on the calendar</div></div>
+        </div>
+      </div>
+      <div class="step-nav"><button class="btn btn-outline" onclick="goStep(2)"><i class="fas fa-arrow-left"></i> Back</button><button class="btn btn-primary" onclick="goStep(4)" id="timeNextBtn" disabled>Next: Your Details <i class="fas fa-arrow-right"></i></button></div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="step-panel" id="step4">
+      <div class="step-header"><h2>Your details</h2><p>We need a few details to confirm your booking and send you a reminder.</p></div>
+      <div class="det-grid">
+        <div class="form-group"><label>First Name <span class="form-required">*</span></label><input type="text" id="fName" placeholder="Priya" required></div>
+        <div class="form-group"><label>Last Name <span class="form-required">*</span></label><input type="text" id="lName" placeholder="Sharma"></div>
+        <div class="form-group"><label>Mobile Number <span class="form-required">*</span></label><input type="tel" id="phone" placeholder="+91 98765 43210" required></div>
+        <div class="form-group"><label>Email Address</label><input type="email" id="email" placeholder="priya@example.com"></div>
+        <div class="form-group"><label>Date of Birth</label><input type="date" id="dob"></div>
+        <div class="form-group"><label>Gender</label><div class="radio-grp"><label class="radio-opt"><input type="radio" name="gender" value="Female"> Female</label><label class="radio-opt"><input type="radio" name="gender" value="Male"> Male</label><label class="radio-opt"><input type="radio" name="gender" value="Other"> Other</label></div></div>
+        <div class="form-group full"><label>First visit to BrightSmile?</label><div class="radio-grp"><label class="radio-opt"><input type="radio" name="firstVisit" value="Yes" checked> Yes, first visit</label><label class="radio-opt"><input type="radio" name="firstVisit" value="No"> No, returning patient</label></div></div>
+        <div class="form-group full"><label>Notes for the dentist?</label><textarea id="notes" rows="3" placeholder="e.g. dental anxiety, specific pain, medications you take..."></textarea></div>
+        <div class="form-group full"><div class="ins-check"><input type="checkbox" id="hasIns"><label for="hasIns">I have dental insurance or a health plan I would like to use (we accept all major plans)</label></div></div>
+        <div class="form-group full" id="insField" style="display:none"><label>Insurance Provider</label><select><option value="">Select provider...</option><option>HDFC ERGO</option><option>Star Health</option><option>Niva Bupa</option><option>Care Health</option><option>Max Bupa</option><option>Bajaj Allianz</option><option>Other</option></select></div>
+      </div>
+      <div class="step-nav"><button class="btn btn-outline" onclick="goStep(3)"><i class="fas fa-arrow-left"></i> Back</button><button class="btn btn-primary" onclick="goToConfirm()">Review Appointment <i class="fas fa-arrow-right"></i></button></div>
+    </div>
+
+    <!-- STEP 5 -->
+    <div class="step-panel" id="step5">
+      <div id="confirmView">
+        <div class="step-header"><h2>Review &amp; confirm</h2><p>Check your details before confirming. We send a confirmation SMS within 2 hours.</p></div>
+        <div class="confirm-card">
+          <div class="cf-hd"><div class="cf-hd-ico">&#128203;</div><div><h3>Appointment Summary</h3><p>BrightSmile Dental Clinic &middot; FC Road, Deccan, Pune</p></div></div>
+          <div class="cf-body">
+            <div class="cf-rows">
+              <div class="cf-row"><div class="cf-ico"><i class="fas fa-tooth"></i></div><div><div class="cf-lbl">Service</div><div class="cf-val" id="cfSvc">-</div></div></div>
+              <div class="cf-row"><div class="cf-ico"><i class="fas fa-user-md"></i></div><div><div class="cf-lbl">Dentist</div><div class="cf-val" id="cfDent">-</div></div></div>
+              <div class="cf-row"><div class="cf-ico"><i class="fas fa-calendar"></i></div><div><div class="cf-lbl">Date &amp; Time</div><div class="cf-val" id="cfDT">-</div></div></div>
+              <div class="cf-row"><div class="cf-ico"><i class="fas fa-clock"></i></div><div><div class="cf-lbl">Duration</div><div class="cf-val" id="cfDur">-</div></div></div>
+              <div class="cf-row"><div class="cf-ico"><i class="fas fa-user"></i></div><div><div class="cf-lbl">Patient</div><div class="cf-val" id="cfPat">-</div></div></div>
+              <div class="cf-row"><div class="cf-ico"><i class="fas fa-phone"></i></div><div><div class="cf-lbl">Contact</div><div class="cf-val" id="cfCont">-</div></div></div>
+              <div class="cf-row"><div class="cf-ico"><i class="fas fa-tag"></i></div><div><div class="cf-lbl">Estimated Cost</div><div class="cf-val" id="cfPrice">-</div></div></div>
+            </div>
+            <div style="background:var(--primary-pale);border-radius:var(--radius-sm);padding:12px;font-size:.82rem;color:var(--text-mid);margin-bottom:20px"><strong style="color:var(--primary)">&#128204; Please note:</strong> Arrive 10 minutes early. Bring any previous dental records or X-rays. Confirmation sent via SMS within 2 hours.</div>
+            <div style="display:flex;gap:12px;flex-wrap:wrap">
+              <button class="btn btn-outline" onclick="goStep(4)"><i class="fas fa-edit"></i> Edit Details</button>
+              <button class="btn btn-primary btn-lg" onclick="submitBooking()" id="submitBtn"><i class="fas fa-check-circle"></i> Confirm Appointment</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="success-screen" id="successScreen">
+        <div class="suc-ico">&#10003;</div>
+        <h2>Appointment Requested!</h2>
+        <p style="max-width:420px;margin:10px auto">Your request has been received. Our team will confirm via SMS within 2 hours.</p>
+        <div class="bk-id" id="bookingId">BS-000000</div>
+        <p style="font-size:.82rem;color:var(--text-muted)">Save this booking ID for reference</p>
+        <div style="margin-top:28px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+          <a href="index.html" class="btn btn-outline">Back to Home</a>
+          <a href="services.html" class="btn btn-primary">Explore Services</a>
+        </div>
+        <div style="margin-top:24px;padding:18px;background:var(--primary-pale);border-radius:var(--radius-md);max-width:400px;margin-left:auto;margin-right:auto">
+          <strong style="color:var(--primary)">&#128205; BrightSmile Dental Clinic</strong><br>
+          <span style="font-size:.82rem;color:var(--text-mid)">14, Dental Plaza, FC Road, Deccan Gymkhana, Pune 411004 &middot; +91 20 1234 5678</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUMMARY SIDEBAR -->
+  <div class="sum-sidebar" id="sumSidebar">
+    <div class="sum-hd">&#128203; Your Booking Summary</div>
+    <div class="sum-body">
+      <div class="sum-row"><div class="sum-lbl">Service</div><div class="sum-val emp" id="sumSvc">Not selected</div></div>
+      <hr class="sum-div">
+      <div class="sum-row"><div class="sum-lbl">Dentist</div><div class="sum-val emp" id="sumDent">Not selected</div></div>
+      <hr class="sum-div">
+      <div class="sum-row"><div class="sum-lbl">Date</div><div class="sum-val emp" id="sumDate">Not selected</div></div>
+      <div class="sum-row"><div class="sum-lbl">Time</div><div class="sum-val emp" id="sumTime">Not selected</div></div>
+      <hr class="sum-div">
+      <div class="sum-row"><div class="sum-lbl">Est. Cost</div><div class="sum-val emp" id="sumPrice">-</div></div>
+      <hr class="sum-div">
+      <div style="font-size:.73rem;color:var(--text-muted);line-height:1.7">&#10003; Free cancellation up to 24h before<br>&#10003; Reminder call the day before<br>&#10003; Insurance claims handled for you</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="logo"><div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M12 2C9.5 2 7.5 3.5 6.5 5.5C5.5 3.5 3 2 2 5C1 8 3 11 5 12.5C5 16 6 22 8 22C9 22 9.5 20.5 10 19C10.5 17.5 11 16 12 16C13 16 13.5 17.5 14 19C14.5 20.5 15 22 16 22C18 22 19 16 19 12.5C21 11 23 8 22 5C21 2 18.5 3.5 17.5 5.5C16.5 3.5 14.5 2 12 2Z"/></svg></div>BrightSmile</a>
+        <p>Creating healthy, beautiful smiles for families across Pune since 2009.</p>
+      </div>
+      <div class="footer-col"><h5>Quick Links</h5><ul class="footer-links"><li><a href="index.html">Home</a></li><li><a href="services.html">Services</a></li><li><a href="about.html">About Us</a></li><li><a href="reviews.html">Reviews</a></li><li><a href="contact.html">Contact</a></li></ul></div>
+      <div class="footer-col"><h5>Services</h5><ul class="footer-links"><li><a href="services.html#general">General Dentistry</a></li><li><a href="services.html#cosmetic">Cosmetic Dentistry</a></li><li><a href="services.html#implants">Dental Implants</a></li><li><a href="services.html#emergency">Emergency Dental</a></li></ul></div>
+      <div class="footer-col"><h5>Contact</h5><div class="footer-contact"><div class="footer-contact-item"><span class="footer-contact-icon"><i class="fas fa-phone"></i></span><span>+91 20 1234 5678</span></div><div class="footer-contact-item"><span class="footer-contact-icon"><i class="fas fa-envelope"></i></span><span>hello@brightsmile.in</span></div><div class="footer-contact-item"><span class="footer-contact-icon"><i class="fas fa-clock"></i></span><span>Mon-Sat: 9 AM - 8 PM</span></div></div></div>
+    </div>
+    <div class="footer-bottom"><p>&copy; 2025 BrightSmile Dental Clinic. All rights reserved.</p><p>&#129463; Made with care for your smile</p></div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script>
+const S={svc:null,price:null,dur:null,dentist:null,spec:null,date:null,time:null,yr:null,mo:null};
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const today=new Date();S.yr=today.getFullYear();S.mo=today.getMonth();
+const BOOKED={3:['10:00 AM','2:30 PM'],7:['9:00 AM','11:00 AM'],12:['9:30 AM'],18:['10:30 AM','4:00 PM'],22:['2:00 PM']};
+const MORNING=['9:00 AM','9:30 AM','10:00 AM','10:30 AM','11:00 AM','11:30 AM'];
+const AFTERNOON=['12:00 PM','12:30 PM','1:00 PM','1:30 PM','2:00 PM','2:30 PM'];
+const EVENING=['3:00 PM','3:30 PM','4:00 PM','4:30 PM','5:00 PM','5:30 PM','6:00 PM','6:30 PM'];
+
+function goStep(n){
+  document.querySelectorAll('.step-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('step'+n).classList.add('active');
+  document.querySelectorAll('.step-item').forEach((it,i)=>{
+    it.classList.remove('active','done');
+    if(i+1<n)it.classList.add('done');
+    if(i+1===n)it.classList.add('active');
+  });
+  document.querySelectorAll('[id^=sc]').forEach((c,i)=>{
+    c.innerHTML=i+1<n?'<i class="fas fa-check" style="font-size:.7rem"></i>':(i+1);
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+document.querySelectorAll('.svc-card').forEach(c=>{
+  c.addEventListener('click',function(){
+    document.querySelectorAll('.svc-card').forEach(x=>x.classList.remove('selected'));
+    this.classList.add('selected');
+    S.svc=this.dataset.svc;S.price=this.dataset.price;S.dur=this.dataset.dur;
+    document.getElementById('svcNextBtn').disabled=false;
+    updateSum();
+  });
+});
+
+document.querySelectorAll('.dentist-card').forEach(c=>{
+  c.addEventListener('click',function(){
+    document.querySelectorAll('.dentist-card').forEach(x=>x.classList.remove('selected'));
+    this.classList.add('selected');
+    S.dentist=this.dataset.dentist;S.spec=this.dataset.spec;
+    document.getElementById('dentNextBtn').disabled=false;
+    updateSum();
+  });
+});
+
+function renderCal(){
+  document.getElementById('calLbl').textContent=MONTHS[S.mo]+' '+S.yr;
+  const first=new Date(S.yr,S.mo,1).getDay();
+  const dim=new Date(S.yr,S.mo+1,0).getDate();
+  const cont=document.getElementById('calDays');cont.innerHTML='';
+  for(let i=0;i<first;i++){const e=document.createElement('div');e.className='cd emp';cont.appendChild(e);}
+  for(let d=1;d<=dim;d++){
+    const e=document.createElement('div');
+    const dt=new Date(S.yr,S.mo,d);
+    const past=dt<new Date(today.getFullYear(),today.getMonth(),today.getDate());
+    const sun=dt.getDay()===0;
+    const ds=S.yr+'-'+String(S.mo+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    e.className='cd';e.textContent=d;
+    if(past||sun){e.classList.add('dis');}
+    else{
+      e.classList.add('has');
+      if(dt.toDateString()===today.toDateString())e.classList.add('tod');
+      if(S.date===ds)e.classList.add('sel');
+      e.addEventListener('click',()=>selectDate(ds,d,e));
+    }
+    cont.appendChild(e);
+  }
+}
+
+function selectDate(ds,d,el){
+  document.querySelectorAll('.cd').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');S.date=ds;S.time=null;
+  document.getElementById('timeNextBtn').disabled=true;
+  renderSlots(d);updateSum();
+}
+
+function renderSlots(d){
+  const bk=BOOKED[d]||[];
+  const w=document.getElementById('slotsWrap');
+  const dt=new Date(S.yr,S.mo,d);
+  document.getElementById('slotTitle').textContent=dt.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long'});
+  w.innerHTML='';
+  const mk=(label,slots)=>{
+    const div=document.createElement('div');
+    div.innerHTML='<div class="period-lbl">'+label+'</div><div class="slot-grp" id="sg'+label.replace(/\W/g,'')+'"></div>';
+    w.appendChild(div);
+    const sg=div.querySelector('.slot-grp');
+    slots.forEach(t=>{
+      const s=document.createElement('div');
+      s.className='ts'+(bk.includes(t)?' bkd':'');
+      s.textContent=t;
+      if(!bk.includes(t)){
+        s.addEventListener('click',()=>{
+          document.querySelectorAll('.ts:not(.bkd)').forEach(x=>x.classList.remove('sel'));
+          s.classList.add('sel');S.time=t;
+          document.getElementById('timeNextBtn').disabled=false;
+          updateSum();
+        });
+      }
+      if(S.time===t&&!bk.includes(t))s.classList.add('sel');
+      sg.appendChild(s);
+    });
+  };
+  mk('☀️ Morning',MORNING);mk('🌤 Afternoon',AFTERNOON);mk('🌇 Evening',EVENING);
+}
+
+document.getElementById('calPrev').addEventListener('click',()=>{S.mo--;if(S.mo<0){S.mo=11;S.yr--;}renderCal();});
+document.getElementById('calNext').addEventListener('click',()=>{S.mo++;if(S.mo>11){S.mo=0;S.yr++;}renderCal();});
+renderCal();
+
+document.getElementById('hasIns').addEventListener('change',function(){document.getElementById('insField').style.display=this.checked?'block':'none';});
+
+function fmtDate(s){if(!s)return'-';const d=new Date(s+'T00:00:00');return d.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});}
+
+function goToConfirm(){
+  const fn=document.getElementById('fName').value.trim();
+  const ph=document.getElementById('phone').value.trim();
+  if(!fn||!ph){showT('Please fill in your name and phone number.','error');return;}
+  const ln=document.getElementById('lName').value.trim();
+  const em=document.getElementById('email').value.trim();
+  document.getElementById('cfSvc').textContent=S.svc||'-';
+  document.getElementById('cfDent').textContent=S.dentist||'-';
+  document.getElementById('cfDT').textContent=fmtDate(S.date)+' at '+S.time;
+  document.getElementById('cfDur').textContent=S.dur||'-';
+  document.getElementById('cfPat').textContent=fn+' '+ln;
+  document.getElementById('cfCont').textContent=ph+(em?' · '+em:'');
+  document.getElementById('cfPrice').textContent=S.price||'-';
+  goStep(5);
+}
+
+async function submitBooking(){
+  const btn=document.getElementById('submitBtn');
+  btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Confirming...';btn.disabled=true;
+  await new Promise(r=>setTimeout(r,1800));
+  const bk={id:'BS-'+Math.floor(100000+Math.random()*900000),service:S.svc,dentist:S.dentist,date:S.date,time:S.time,
+    patient:document.getElementById('fName').value+' '+document.getElementById('lName').value,
+    phone:document.getElementById('phone').value,email:document.getElementById('email').value,
+    notes:document.getElementById('notes').value,price:S.price,dur:S.dur,status:'Pending',createdAt:new Date().toISOString()};
+  const ex=JSON.parse(localStorage.getItem('bs_appointments')||'[]');ex.unshift(bk);
+  localStorage.setItem('bs_appointments',JSON.stringify(ex));
+  document.getElementById('bookingId').textContent=bk.id;
+  document.getElementById('confirmView').style.display='none';
+  document.getElementById('successScreen').classList.add('show');
+  document.getElementById('sumSidebar').style.display='none';
+  document.querySelector('.stepper-wrap').style.display='none';
+}
+
+function updateSum(){
+  const sv=(id,v)=>{const e=document.getElementById(id);if(v){e.textContent=v;e.classList.remove('emp');}else{e.textContent='Not selected';e.classList.add('emp');}};
+  sv('sumSvc',S.svc);sv('sumDent',S.dentist);sv('sumDate',S.date?fmtDate(S.date):null);sv('sumTime',S.time);sv('sumPrice',S.price);
+}
+
+function showT(msg,type){const t=document.createElement('div');t.className='toast '+type;t.textContent=msg;document.body.appendChild(t);requestAnimationFrame(()=>t.classList.add('show'));setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),400);},3500);}
+</script>
+</body>
+</html>
